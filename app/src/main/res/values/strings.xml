@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CodeEdit</string>
+    <string name="add_server_fab">Add new server</string>
 </resources>
