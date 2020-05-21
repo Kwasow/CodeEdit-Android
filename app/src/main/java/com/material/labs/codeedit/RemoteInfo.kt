@@ -68,7 +68,7 @@ data class RemoteInfo(var alias: String, var hostname: String, var username: Str
             val objectOutputStream = ObjectOutputStream(outputStream)
             objectOutputStream.writeObject(info)
 
-            // Check if it saved correctly
+            // Check if it saved correctly and delete old file
             return if (fileNew.exists()) {
                 fileOld.delete()
                 true
