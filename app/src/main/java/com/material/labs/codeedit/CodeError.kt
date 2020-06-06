@@ -10,6 +10,7 @@ class CodeError {
 
         fun logE(e: Exception) {
             Log.e(logTag, e.toString())
+            e.printStackTrace()
         }
 
         fun logI(s: String) {

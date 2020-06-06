@@ -20,10 +20,16 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar = supportActionBar
         actionBar?.title = "Servers"
+        actionBar?.hide()
 
+        var terminalView = layoutBinding.terminalView
+        terminalView.connect("192.168.0.10")
+/*
         layoutBinding.addServerFab.setOnClickListener {
             // Open a add server activity
         }
+*/
+
 /*
         var thread = Thread {
             var connection = Connection("192.168.0.10")
@@ -55,8 +61,8 @@ class MainActivity : AppCompatActivity() {
         thread.start()
 
         layoutBinding.text.text = outString
-*/
 
+*/
         setContentView(layoutBinding.root)
     }
 }
