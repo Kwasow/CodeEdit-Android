@@ -1,7 +1,9 @@
 package com.material.labs.codeedit.views
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
@@ -10,9 +12,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
-import com.material.labs.codeedit.CodeLogger
+import com.material.labs.codeedit.utils.CodeLogger
 
 import com.material.labs.codeedit.R
+import com.material.labs.codeedit.utils.NetworkState
 
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.ConnectionInfo
@@ -35,8 +38,6 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
     private lateinit var stdin: OutputStream
     private lateinit var stderr: InputStream
 
-    private var update = true
-
     // Open view
     init {
         inflate(context, R.layout.terminal_view, this)
@@ -47,13 +48,15 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
                 session.close()
                 connection.close()
             }.start()
-            update = false
 
             // Inform the user
             this.rootView.textView.append("\nConnection terminated")
             this.rootView.post {
                 fullScroll(View.FOCUS_DOWN)
             }
+
+            this.rootView.buttonCommand.isEnabled = false
+            this.rootView.buttonDisconnect.isEnabled = false
         }
 
         this.rootView.buttonCommand.setOnClickListener {
@@ -76,26 +79,27 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
     // Connect to new ssh session
     fun connect(hostname: String, port: Int = 22) {
 
+        // This thread listens to updates on the sessions output
         val readThread = Thread {
-            while (update) {
-                var x = stdout.read()
-                while (x != -1) {
-                    val c = x.toChar()
-                    Handler(Looper.getMainLooper()).post {
-                        this.rootView.textView.append(c.toString())
-                        this.rootView.post {
-                            fullScroll(View.FOCUS_DOWN)
-                        }
+            var x = stdout.read()
+            while (x != -1) {
+                val c = x.toChar()
+                Handler(Looper.getMainLooper()).post {
+                    this.rootView.textView.append(c.toString())
+                    this.rootView.post {
+                        fullScroll(View.FOCUS_DOWN)
                     }
-
-                    x = stdout.read()
                 }
+
+                x = stdout.read()
             }
         }
 
+        // The main network (session) thread
         val connectionThread = Thread {
             connection = Connection(hostname, port)
             try {
+
                 connectionInfo = connection.connect()
                 connection.authenticateWithPassword("test", "test_password")
                 session = connection.openSession()
@@ -112,8 +116,12 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
 
                 readThread.start()
 
-                //newPrompt()
-                //execute("exit")
+                // UI stuff has to run on the main (UI) thread
+                Handler(Looper.getMainLooper()).post {
+                    this.rootView.buttonCommand.isEnabled = true
+                    this.rootView.buttonDisconnect.isEnabled = true
+                }
+
             } catch (e: IOException) {
                 CodeLogger.logE(e)
                 Handler(Looper.getMainLooper()).post {
@@ -125,43 +133,34 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             }
         }
 
-        // TODO: check if wifi
-
-        connectionThread.start()
-    }
-
-    // TODO: Execute `echo $USER@$HOSTNAME: ` somehow
-    private fun newPrompt() {
-        /*
-        val sessionOut = session.stdout
-        val sessionIn = session.stdin
-
-        PrintWriter(sessionIn).println("echo test")
-
-        var x = sessionOut.read()
-        while (x != -1) {
-            val c = x.toChar()
-            Handler(Looper.getMainLooper()).post {
-                this.rootView.textView.append(c.toString())
-                this.rootView.post {
-                    fullScroll(View.FOCUS_DOWN)
-                }
+        // Check if we are on a WIFI/Ethernet network
+        if ((NetworkState.type(context) == NetworkState.State.WIFI) or
+            (NetworkState.type(context) == NetworkState.State.ETHERNET)) {
+            connectionThread.start()
+        } else {
+            val builder = AlertDialog.Builder(context)
+            var message = resources.getString(R.string.network_not_wifi)
+            message += when (NetworkState.type(context)) {
+                NetworkState.State.MOBILE ->
+                    " " + resources.getString(R.string.on_mobile)
+                NetworkState.State.OFFLINE ->
+                    " " + resources.getString(R.string.offline)
+                // If error or something else
+                else ->
+                    " " + resources.getString(R.string.something_wrong)
             }
 
-            x = sessionOut.read()
+            builder.setMessage(message)
+            builder.setTitle(R.string.alert)
+            builder.setPositiveButton(R.string.button_continue) { _: DialogInterface, _: Int ->
+                connectionThread.start()
+            }
+            builder.setNegativeButton(R.string.button_cancel) { _: DialogInterface, _: Int ->
+                this.rootView.textView.append(
+                    resources.getString(R.string.connection_interrupted_user))
+            }
+
+            builder.show()
         }
-
-         */
-
-        //val inputField = EditText(this.context)
-        //inputField.textCursorDrawable = this.context.getDrawable(R.drawable.terminal_cursor)
-    }
-
-    private fun execute(command: String) {
-        session.execCommand(command)
-    }
-
-    private fun update(s: String) {
-        this.rootView.textView.append(s)
     }
 }

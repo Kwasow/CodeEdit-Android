@@ -25,18 +25,6 @@
                 android:fontFamily="@font/ubuntu_mono"
                 android:padding="0dp"/>
 
-            <!-- This is just for testing -->
-            <!--
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textCursorDrawable="@drawable/terminal_cursor"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:fontFamily="@font/ubuntu_mono"
-                android:padding="0dp"/>
-            -->
-
         </LinearLayout>
 
     </ScrollView>
@@ -46,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="Command"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonDisconnect"/>
@@ -55,6 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="Disconnect"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/buttonCommand"/>

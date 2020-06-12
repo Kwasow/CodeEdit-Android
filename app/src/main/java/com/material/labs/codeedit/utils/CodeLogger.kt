@@ -1,4 +1,4 @@
-package com.material.labs.codeedit
+package com.material.labs.codeedit.utils
 
 import android.util.Log
 import java.lang.Exception

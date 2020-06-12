@@ -1,4 +1,4 @@
-package com.material.labs.codeedit
+package com.material.labs.codeedit.utils
 
 import android.content.Context
 import java.io.File
@@ -6,21 +6,21 @@ import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 
-data class RemoteInfo(var alias: String, var hostname: String, var username: String, var port: Int = 22) {
+data class RemoteInfoManager(var alias: String, var hostname: String, var username: String, var port: Int = 22) {
 
     // All these functions are static for ease of use
     companion object {
 
         // Read saved servers from storage
-        fun get(context: Context) : MutableList<RemoteInfo> {
+        fun get(context: Context) : MutableList<RemoteInfoManager> {
             val directory = File(context.filesDir.toString() + "/servers/")
             val fileList = directory.listFiles()
-            val serverList = mutableListOf<RemoteInfo>()
+            val serverList = mutableListOf<RemoteInfoManager>()
 
             fileList?.forEach { file ->
                 val inputStream = context.openFileInput(file.toString())
                 val objectInputStream = ObjectInputStream(inputStream)
-                val tmp: RemoteInfo = objectInputStream.readObject() as RemoteInfo
+                val tmp: RemoteInfoManager = objectInputStream.readObject() as RemoteInfoManager
 
                 serverList.add(tmp)
             }
@@ -31,7 +31,7 @@ data class RemoteInfo(var alias: String, var hostname: String, var username: Str
         // The following functions return false if something failed and there was an error
 
         // Save the given server info to a file
-        fun save(info: RemoteInfo, context: Context) : Boolean {
+        fun save(info: RemoteInfoManager, context: Context) : Boolean {
             val file = File(context.filesDir.toString() + "/servers/" + info.alias)
 
             // Do not attempt to save the info if a server with the same alias already exists
@@ -59,7 +59,7 @@ data class RemoteInfo(var alias: String, var hostname: String, var username: Str
             return file.delete()
         }
 
-        fun update(aliasOld: String, info: RemoteInfo, context: Context) : Boolean {
+        fun update(aliasOld: String, info: RemoteInfoManager, context: Context) : Boolean {
             val fileOld = File(context.filesDir.toString() + "/servers/" + aliasOld)
             val fileNew = File(context.filesDir.toString() + "/servers/" + info.alias)
 
