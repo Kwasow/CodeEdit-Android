@@ -1,8 +1,10 @@
 package com.material.labs.codeedit
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 
 import android.os.Bundle
+import android.view.View
 
 import com.material.labs.codeedit.databinding.ActivityMainBinding
 
@@ -14,17 +16,16 @@ class MainActivity : AppCompatActivity() {
 
         layoutBinding = ActivityMainBinding.inflate(layoutInflater)
 
-        val actionBar = supportActionBar
-        actionBar?.title = "Servers"
-        actionBar?.hide()
-
-        var terminalView = layoutBinding.terminalView
-        terminalView.connect("192.168.0.10")
-/*
-        layoutBinding.addServerFab.setOnClickListener {
-            terminalView.close()
-        }
-*/
         setContentView(layoutBinding.root)
+    }
+
+    fun launchTerminal(v: View) {
+        val intent = Intent(this, TerminalActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun launchFiles(v: View) {
+        val intent = Intent(this, FilesActivity::class.java)
+        startActivity(intent)
     }
 }

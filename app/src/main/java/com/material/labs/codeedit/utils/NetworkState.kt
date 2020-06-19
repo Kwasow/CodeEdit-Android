@@ -14,6 +14,8 @@ class NetworkState {
 
     companion object {
 
+        @Suppress("DEPRECATION")
+        // NetworkInfo is deprecated, but only on SDK 23+, where the new method is being used
         fun type(context: Context) : State {
             val connectivityManager: ConnectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -41,8 +43,6 @@ class NetworkState {
                 return State.ERROR
 
             } else {
-                // This is deprecated, but there seems to be no other way of doing it
-
                 // Return offline if null
                 val info: NetworkInfo = connectivityManager.activeNetworkInfo
                     ?: return State.OFFLINE

@@ -77,7 +77,7 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
     }
 
     // Connect to new ssh session
-    fun connect(hostname: String, port: Int = 22) {
+    fun connect(hostname: String, user: String, password: String, port: Int = 22) {
 
         // This thread listens to updates on the sessions output
         val readThread = Thread {
@@ -101,7 +101,7 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             try {
 
                 connectionInfo = connection.connect()
-                connection.authenticateWithPassword("test", "test_password")
+                connection.authenticateWithPassword(user, password)
                 session = connection.openSession()
 
                 // TODO: Try xterm-256color in the future
