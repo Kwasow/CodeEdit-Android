@@ -49,6 +49,7 @@ class FilesActivity : AppCompatActivity() {
         alert.show()
     }
 
+    // TODO: Fix window leaking
     override fun onDestroy() {
         super.onDestroy()
 

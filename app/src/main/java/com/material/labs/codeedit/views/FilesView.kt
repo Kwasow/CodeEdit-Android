@@ -28,17 +28,16 @@ import java.io.OutputStream
 // The files view manages getting the files list, navigating through
 // the filesystem and managing it's own ssh session
 class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, attrs) {
-    private lateinit var connection: Connection
-    private lateinit var connectionInfo: ConnectionInfo
-    private lateinit var session: Session
+    private var connection: Connection? = null
+    private var connectionInfo: ConnectionInfo? = null
+    private var session: Session? = null
 
-    private lateinit var stdout: InputStream
-    private lateinit var stdin: OutputStream
-    private lateinit var stderr: InputStream
+    private var stdout: InputStream? = null
+    private var stdin: OutputStream? = null
+    private var stderr: InputStream? = null
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private var viewManager: RecyclerView.LayoutManager
 
     init {
         inflate(context, R.layout.view_files, this)
@@ -51,10 +50,10 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
         val readThread = Thread {
             var returnString = ""
 
-            var x = stdout.read()
+            var x = stdout?.read()
             while (x != -1) {
-                returnString += x.toChar()
-                x = stdout.read()
+                returnString += x?.toChar()
+                x = stdout?.read()
             }
 
             // Update files list when the command output ends
@@ -65,17 +64,17 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
             connection = Connection(hostname, port)
             try {
 
-                connectionInfo = connection.connect()
-                connection.authenticateWithPassword(user, password)
-                session = connection.openSession()
+                connectionInfo = connection?.connect()
+                connection?.authenticateWithPassword(user, password)
+                session = connection?.openSession()
 
-                stdout = session.stdout // InputStream
-                stdin = session.stdin // OutputStreams
-                stderr = session.stderr // InputStream
+                stdout = session?.stdout // InputStream
+                stdin = session?.stdin // OutputStreams
+                stderr = session?.stderr // InputStream
 
                 CodeLogger.logD("Connected")
                 // This will list all files as well as their type
-                session.execCommand("file .* *")
+                session?.execCommand("file .* *")
 
                 readThread.start()
 
@@ -121,7 +120,12 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
         val filesArray = mutableListOf<FileDetails>()
         files.split(Regex("\n")).forEach foreach@{
             if (it.isNotEmpty()) {
-                val tmp = it.split(Regex("[ ]+"), 2)
+                val tmp = it.split(Regex(":[ ]+"), 2)
+
+                // Ignore current folder
+                if (tmp[0] == ".") {
+                    return@foreach
+                }
 
                 // If one of the "files" is * then it means that there was an error
                 // `*: cannot open '*' (No such file or directory)`
@@ -139,7 +143,7 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
                 } else {
                     FileDetails.Type.OTHER
                 }
-                filesArray.add(FileDetails(tmp[0].removeSuffix(":"), tmpType))
+                filesArray.add(FileDetails(tmp[0]/*.removeSuffix(":")*/, tmpType))
             }
         }
 
@@ -153,11 +157,13 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
     }
 
     fun onDestroy() {
-        session.close()
-        connection.close()
-        stdin.close()
-        stdout.close()
-        stderr.close()
+        Thread {
+            session?.close()
+            connection?.close()
+        }.start()
+        stdin?.close()
+        stdout?.close()
+        stderr?.close()
     }
 
 }
