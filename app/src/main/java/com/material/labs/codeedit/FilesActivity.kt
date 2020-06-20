@@ -7,6 +7,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.material.labs.codeedit.databinding.ActivityFilesBinding
 import com.material.labs.codeedit.views.FilesView
+import kotlinx.android.synthetic.main.activity_files.*
 
 class FilesActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityFilesBinding
@@ -47,6 +48,15 @@ class FilesActivity : AppCompatActivity() {
             finish()
         }
         alert.show()
+    }
+
+    override fun onBackPressed() {
+        // If we are not at ./ then navigate back in the files tree
+        if (filesView.path == "./") {
+            super.onBackPressed()
+        } else {
+            filesView.goBack()
+        }
     }
 
     // TODO: Fix window leaking

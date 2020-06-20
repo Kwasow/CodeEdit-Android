@@ -42,7 +42,7 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
     private var viewManager: RecyclerView.LayoutManager
     private var loadingIndicator: ProgressBar
 
-    private var path = "./"
+    var path = "./"
 
     init {
         inflate(context, R.layout.view_files, this)
@@ -184,6 +184,16 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
 
     fun updatePath(folderName: String) {
         path += "$folderName/"
+        cdFile()
+    }
+
+    fun goBack() {
+        val pathList = path.split("/")
+        path = ""
+        pathList.subList(0, pathList.lastIndex - 1).forEach {
+            path += "$it/"
+        }
+        CodeLogger.logD(path)
         cdFile()
     }
 
