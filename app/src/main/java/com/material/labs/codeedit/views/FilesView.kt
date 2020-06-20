@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,9 +20,10 @@ import com.material.labs.codeedit.utils.NetworkState
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.ConnectionInfo
 import com.trilead.ssh2.Session
-import kotlinx.android.synthetic.main.view_terminal.view.*
-import java.io.IOException
 
+import kotlinx.android.synthetic.main.view_terminal.view.*
+
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -36,29 +38,20 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
     private var stdin: OutputStream? = null
     private var stderr: InputStream? = null
 
-    private lateinit var recyclerView: RecyclerView
+    private var recyclerView: RecyclerView? = null
     private var viewManager: RecyclerView.LayoutManager
+    private var loadingIndicator: ProgressBar
+
+    private var path = "./"
 
     init {
         inflate(context, R.layout.view_files, this)
 
+        loadingIndicator = findViewById(R.id.loadingIndicator)
         viewManager = LinearLayoutManager(context)
     }
 
     fun connect(hostname: String, user: String, password: String, port: Int = 22) {
-
-        val readThread = Thread {
-            var returnString = ""
-
-            var x = stdout?.read()
-            while (x != -1) {
-                returnString += x?.toChar()
-                x = stdout?.read()
-            }
-
-            // Update files list when the command output ends
-            updateAdapter(returnString)
-        }
 
         val connectionThread = Thread {
             connection = Connection(hostname, port)
@@ -66,17 +59,11 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
 
                 connectionInfo = connection?.connect()
                 connection?.authenticateWithPassword(user, password)
-                session = connection?.openSession()
-
-                stdout = session?.stdout // InputStream
-                stdin = session?.stdin // OutputStreams
-                stderr = session?.stderr // InputStream
 
                 CodeLogger.logD("Connected")
-                // This will list all files as well as their type
-                session?.execCommand("file .* *")
-
-                readThread.start()
+                // Reset path and read directories
+                path = "./"
+                cdFile()
 
             } catch (e: IOException) {
                 CodeLogger.logE(e)
@@ -116,6 +103,43 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
 
     }
 
+    private fun cdFile() {
+        // Display loading indicator and hide file list
+        // It'll be made visible again in `updateAdapter()`
+        recyclerView?.visibility = GONE
+        loadingIndicator.visibility = VISIBLE
+
+        val readThread = Thread {
+            var returnString = ""
+
+            var x = stdout?.read()
+            while (x != -1) {
+                returnString += x?.toChar()
+                x = stdout?.read()
+            }
+
+            // Close session after read is done
+            session?.close()
+
+            // Update files list when the command output ends
+            updateAdapter(returnString)
+        }
+
+        Thread {
+            session = connection?.openSession()
+
+            stdout = session?.stdout // InputStream
+            stdin = session?.stdin // OutputStreams
+            stderr = session?.stderr // InputStream
+
+            // This will list all files as well as their type
+            session?.execCommand("cd $path && file .* *")
+
+            readThread.start()
+        }.start()
+
+    }
+
     private fun updateAdapter(files: String) {
         val filesArray = mutableListOf<FileDetails>()
         files.split(Regex("\n")).forEach foreach@{
@@ -143,7 +167,7 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
                 } else {
                     FileDetails.Type.OTHER
                 }
-                filesArray.add(FileDetails(tmp[0]/*.removeSuffix(":")*/, tmpType))
+                filesArray.add(FileDetails(tmp[0], tmpType))
             }
         }
 
@@ -151,9 +175,16 @@ class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, att
         Handler(Looper.getMainLooper()).post {
             recyclerView = findViewById<RecyclerView>(R.id.filesRecyclerView).apply {
                 layoutManager = viewManager
-                adapter = FilesAdapter(filesArray)
+                adapter = FilesAdapter(filesArray, this@FilesView)
             }
+            loadingIndicator.visibility = GONE
+            recyclerView?.visibility = VISIBLE
         }
+    }
+
+    fun updatePath(folderName: String) {
+        path += "$folderName/"
+        cdFile()
     }
 
     fun onDestroy() {

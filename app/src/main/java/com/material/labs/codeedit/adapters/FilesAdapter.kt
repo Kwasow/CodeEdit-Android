@@ -9,18 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.material.labs.codeedit.R
 import com.material.labs.codeedit.models.FileDetails
+import com.material.labs.codeedit.utils.CodeLogger
+import com.material.labs.codeedit.views.FilesView
 
-class FilesAdapter(private val dataset: MutableList<FileDetails>) :
+class FilesAdapter(private val dataset: MutableList<FileDetails>, private val filesView: FilesView) :
     RecyclerView.Adapter<FilesAdapter.ViewHolder>() {
 
     init {
         // Sort to be grouped by types (directories, text, binary, other)
         dataset.sort()
+
+        // Use unique IDs
+        setHasStableIds(true)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var filename: TextView = itemView.findViewById(R.id.fileName)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,6 +53,11 @@ class FilesAdapter(private val dataset: MutableList<FileDetails>) :
                 .setCompoundDrawablesRelativeWithIntrinsicBounds(
                     R.drawable.ic_file_other,
                     0, 0, 0)
+        }
+        holder.itemView.setOnClickListener {
+            if (dataset[position].type == FileDetails.Type.DIRECTORY) {
+                filesView.updatePath(dataset[position].name)
+            }
         }
     }
 

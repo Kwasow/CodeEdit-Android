@@ -9,6 +9,15 @@
         android:id="@+id/filesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        style="@android:style/Widget.ProgressBar.Large"
+        android:visibility="visible"/>
 
 </LinearLayout>
