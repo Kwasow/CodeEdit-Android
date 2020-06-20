@@ -17,3 +17,6 @@ everyone by Google in some version of Android in the future.
  - Ubuntu server 20.04 LTS
 
 *Most linux distributions should work without issues*
+
+The app requires the `ls` and `file` commands to work on your remote system.
+This means that macOS should also work.

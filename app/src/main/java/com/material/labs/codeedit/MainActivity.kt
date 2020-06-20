@@ -8,6 +8,9 @@ import android.view.View
 
 import com.material.labs.codeedit.databinding.ActivityMainBinding
 
+// TODO: In the future there should be a service making hold of the connection.
+// Other classes and views will only connect to it and ask for new sessions
+
 class MainActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityMainBinding
 

@@ -1,35 +1,33 @@
 package com.material.labs.codeedit.views
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ScrollView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-import com.material.labs.codeedit.utils.CodeLogger
 import com.material.labs.codeedit.R
+import com.material.labs.codeedit.adapters.FilesAdapter
+import com.material.labs.codeedit.models.FileDetails
+import com.material.labs.codeedit.utils.CodeLogger
 import com.material.labs.codeedit.utils.NetworkState
 
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.ConnectionInfo
 import com.trilead.ssh2.Session
-
 import kotlinx.android.synthetic.main.view_terminal.view.*
-
 import java.io.IOException
+
 import java.io.InputStream
 import java.io.OutputStream
 
-// The terminal view manages everything about the ssh session
-// Both input, running commands and throwing their output
-class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, attrs) {
+// The files view manages getting the files list, navigating through
+// the filesystem and managing it's own ssh session
+class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, attrs) {
     private lateinit var connection: Connection
     private lateinit var connectionInfo: ConnectionInfo
     private lateinit var session: Session
@@ -38,64 +36,31 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
     private lateinit var stdin: OutputStream
     private lateinit var stderr: InputStream
 
-    // Open view
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
+
     init {
-        inflate(context, R.layout.view_terminal, this)
-        this.rootView.setBackgroundColor(Color.BLACK)
+        inflate(context, R.layout.view_files, this)
 
-        this.rootView.buttonDisconnect.setOnClickListener {
-            Thread {
-                session.close()
-                connection.close()
-            }.start()
-
-            // Inform the user
-            this.rootView.textView.append("\nConnection terminated")
-            this.rootView.post {
-                fullScroll(View.FOCUS_DOWN)
-            }
-
-            this.rootView.buttonCommand.isEnabled = false
-            this.rootView.buttonDisconnect.isEnabled = false
-        }
-
-        this.rootView.buttonCommand.setOnClickListener {
-            val alert = Dialog(context)
-            alert.setContentView(R.layout.dialog_command)
-            val commandInput = alert.findViewById<EditText>(R.id.commandInput)
-            val buttonExecute = alert.findViewById<Button>(R.id.buttonExecute)
-            buttonExecute.setOnClickListener {
-                val command = commandInput.text.toString()
-                Thread {
-                    stdin.write(command.toByteArray())
-                    stdin.write(30)
-                }.start()
-                alert.hide()
-            }
-            alert.show()
-        }
+        viewManager = LinearLayoutManager(context)
     }
 
-    // Connect to new ssh session
     fun connect(hostname: String, user: String, password: String, port: Int = 22) {
 
-        // This thread listens to updates on the sessions output
         val readThread = Thread {
+            var returnString = ""
+
             var x = stdout.read()
             while (x != -1) {
-                val c = x.toChar()
-                Handler(Looper.getMainLooper()).post {
-                    this.rootView.textView.append(c.toString())
-                    this.rootView.post {
-                        fullScroll(View.FOCUS_DOWN)
-                    }
-                }
-
+                returnString += x.toChar()
                 x = stdout.read()
             }
+
+            // Update files list when the command output ends
+            updateAdapter(returnString)
         }
 
-        // The main network (session) thread
         val connectionThread = Thread {
             connection = Connection(hostname, port)
             try {
@@ -104,32 +69,19 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
                 connection.authenticateWithPassword(user, password)
                 session = connection.openSession()
 
-                // TODO: Try xterm-256color in the future
-                session.requestDumbPTY()
-                session.startShell()
-
                 stdout = session.stdout // InputStream
                 stdin = session.stdin // OutputStreams
                 stderr = session.stderr // InputStream
 
                 CodeLogger.logD("Connected")
+                // This will list all files as well as their type
+                session.execCommand("file .* *")
 
                 readThread.start()
 
-                // UI stuff has to run on the main (UI) thread
-                Handler(Looper.getMainLooper()).post {
-                    this.rootView.buttonCommand.isEnabled = true
-                    this.rootView.buttonDisconnect.isEnabled = true
-                }
-
             } catch (e: IOException) {
                 CodeLogger.logE(e)
-                Handler(Looper.getMainLooper()).post {
-                    this.rootView.textView.text = e.toString()
-                    this.rootView.post {
-                        fullScroll(View.FOCUS_DOWN)
-                    }
-                }
+                CodeLogger.errorDialog(context, e)
             }
         }
 
@@ -162,5 +114,50 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
 
             builder.show()
         }
+
     }
+
+    private fun updateAdapter(files: String) {
+        val filesArray = mutableListOf<FileDetails>()
+        files.split(Regex("\n")).forEach foreach@{
+            if (it.isNotEmpty()) {
+                val tmp = it.split(Regex("[ ]+"), 2)
+
+                // If one of the "files" is * then it means that there was an error
+                // `*: cannot open '*' (No such file or directory)`
+                if (tmp[1].contains("*")) {
+                    return@foreach
+                }
+
+                // TODO: Can this somehow be a when statement?
+                val tmpType: FileDetails.Type = if (tmp[1].contains("directory")) {
+                    FileDetails.Type.DIRECTORY
+                } else if (tmp[1].contains("text")) {
+                    FileDetails.Type.TEXT
+                } else if (tmp[1].contains("executable") || tmp[1].contains("script")) {
+                    FileDetails.Type.BINARY
+                } else {
+                    FileDetails.Type.OTHER
+                }
+                filesArray.add(FileDetails(tmp[0].removeSuffix(":"), tmpType))
+            }
+        }
+
+        // Run on UI thread (this function is called from the readThread)
+        Handler(Looper.getMainLooper()).post {
+            recyclerView = findViewById<RecyclerView>(R.id.filesRecyclerView).apply {
+                layoutManager = viewManager
+                adapter = FilesAdapter(filesArray)
+            }
+        }
+    }
+
+    fun onDestroy() {
+        session.close()
+        connection.close()
+        stdin.close()
+        stdout.close()
+        stderr.close()
+    }
+
 }

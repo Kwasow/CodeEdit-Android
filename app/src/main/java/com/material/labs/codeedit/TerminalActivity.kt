@@ -16,6 +16,7 @@ class TerminalActivity : AppCompatActivity() {
         layoutBinding = ActivityTerminalBinding.inflate(layoutInflater)
         val terminal = layoutBinding.terminalView
 
+        // This is a temporary solution for the testing stage
         val alert = Dialog(this)
         alert.setContentView(R.layout.dialog_connect)
         val buttonConnect = alert.findViewById<Button>(R.id.buttonConnect)

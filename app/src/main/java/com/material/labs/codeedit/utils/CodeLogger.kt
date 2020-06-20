@@ -1,6 +1,11 @@
 package com.material.labs.codeedit.utils
 
+import android.app.Dialog
+import android.content.Context
 import android.util.Log
+import android.widget.TextView
+import com.material.labs.codeedit.R
+
 import java.lang.Exception
 
 // Used for easier management of logtags
@@ -26,6 +31,13 @@ class CodeLogger {
 
         fun logSSH(s: String) {
             Log.i(logTagSSH, s)
+        }
+
+        fun errorDialog(context: Context, e: Exception) {
+            val dialog = Dialog(context)
+            dialog.setContentView(R.layout.dialog_error)
+            dialog.findViewById<TextView>(R.id.errorText).text = e.toString()
+            dialog.show()
         }
     }
 
