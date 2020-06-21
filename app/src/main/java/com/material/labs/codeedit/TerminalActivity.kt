@@ -36,12 +36,12 @@ class TerminalActivity : AppCompatActivity() {
                 )
             }
 
-            alert.hide()
+            alert.dismiss()
             setContentView(layoutBinding.root)
         }
         val buttonCancel = alert.findViewById<Button>(R.id.buttonCancel)
         buttonCancel.setOnClickListener {
-            alert.hide()
+            alert.dismiss()
             finish()
         }
         alert.show()

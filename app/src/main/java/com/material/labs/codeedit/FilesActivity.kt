@@ -38,13 +38,13 @@ class FilesActivity : AppCompatActivity() {
                     alert.findViewById<EditText>(R.id.inputPassword).text.toString()
                 )
             }
-
-            alert.hide()
+            
+            alert.dismiss()
             setContentView(layoutBinding.root)
         }
         val buttonCancel = alert.findViewById<Button>(R.id.buttonCancel)
         buttonCancel.setOnClickListener {
-            alert.hide()
+            alert.dismiss()
             finish()
         }
         alert.show()
@@ -59,7 +59,6 @@ class FilesActivity : AppCompatActivity() {
         }
     }
 
-    // TODO: Fix window leaking
     override fun onDestroy() {
         super.onDestroy()
 
