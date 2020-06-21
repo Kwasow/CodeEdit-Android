@@ -7,7 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.widget.ProgressBar
-import android.widget.ScrollView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -29,7 +29,7 @@ import java.io.OutputStream
 
 // The files view manages getting the files list, navigating through
 // the filesystem and managing it's own ssh session
-class FilesView(context: Context, attrs: AttributeSet) : ScrollView(context, attrs) {
+class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
     private var connection: Connection? = null
     private var connectionInfo: ConnectionInfo? = null
     private var session: Session? = null
