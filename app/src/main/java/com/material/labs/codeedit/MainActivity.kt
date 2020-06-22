@@ -1,10 +1,8 @@
 package com.material.labs.codeedit
 
+import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 
 import android.os.Bundle
@@ -14,7 +12,9 @@ import android.widget.Button
 import android.widget.EditText
 
 import com.material.labs.codeedit.databinding.ActivityMainBinding
+import com.material.labs.codeedit.interfaces.ConnectionCallbacks
 import com.material.labs.codeedit.utils.ConnectionService
+
 import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var serviceIntent: Intent
 
+    private lateinit var connectionCallbacks: ConnectionCallbacks
     private var connectionService: ConnectionService? = null
     private var isBound = false
 
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
             val binder = service as ConnectionService.LocalBinder
             connectionService = binder.getService()
             isBound = true
+
+            connectionService?.addCallback(connectionCallbacks)
 
             // If service is already connected to something
             if (connectionService?.isConnected() == true) {
@@ -51,6 +54,41 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         layoutBinding = ActivityMainBinding.inflate(layoutInflater)
+
+        connectionCallbacks = object : ConnectionCallbacks {
+            override fun onConnected() {
+                runOnUiThread {
+                    // Update buttons
+                    layoutBinding.root.mainButtonConnect.isEnabled = false
+                    layoutBinding.root.mainButtonLaunchTerminal.isEnabled = true
+                    layoutBinding.root.mainButtonLaunchFiles.isEnabled = true
+                    layoutBinding.root.mainButtonDisconnect.isEnabled = true
+                }
+            }
+
+            override fun onDisconnected() {
+                runOnUiThread {
+                    // Update buttons
+                    layoutBinding.root.mainButtonConnect.isEnabled = true
+                    layoutBinding.root.mainButtonLaunchTerminal.isEnabled = false
+                    layoutBinding.root.mainButtonLaunchFiles.isEnabled = false
+                    layoutBinding.root.mainButtonDisconnect.isEnabled = false
+                }
+            }
+
+
+            override fun onError(error: String) {
+                runOnUiThread {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Error")
+                        .setMessage(error)
+                        .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
+                            dialogInterface.dismiss()
+                        }
+                        .show()
+                }
+            }
+        }
 
         serviceIntent = Intent(this, ConnectionService::class.java)
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -93,12 +131,6 @@ class MainActivity : AppCompatActivity() {
 
             startService(serviceIntent)
             alert.dismiss()
-
-            // Update buttons
-            layoutBinding.root.mainButtonConnect.isEnabled = false
-            layoutBinding.root.mainButtonLaunchTerminal.isEnabled = true
-            layoutBinding.root.mainButtonLaunchFiles.isEnabled = true
-            layoutBinding.root.mainButtonDisconnect.isEnabled = true
         }
         val buttonCancel = alert.findViewById<Button>(R.id.buttonCancel)
         buttonCancel.setOnClickListener {
@@ -116,16 +148,12 @@ class MainActivity : AppCompatActivity() {
 
         // Reset intent
         serviceIntent = Intent(this, ConnectionService::class.java)
-
-        // Update buttons
-        layoutBinding.root.mainButtonConnect.isEnabled = true
-        layoutBinding.root.mainButtonLaunchTerminal.isEnabled = false
-        layoutBinding.root.mainButtonLaunchFiles.isEnabled = false
-        layoutBinding.root.mainButtonDisconnect.isEnabled = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
+        connectionService?.removeCallback(connectionCallbacks)
 
         unbindService(serviceConnection)
     }

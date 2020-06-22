@@ -2,8 +2,10 @@ package com.material.labs.codeedit
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+
 import com.material.labs.codeedit.databinding.ActivityFilesBinding
 import com.material.labs.codeedit.views.FilesView
+
 import kotlinx.android.synthetic.main.activity_files.*
 
 class FilesActivity : AppCompatActivity() {

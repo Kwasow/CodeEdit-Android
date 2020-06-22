@@ -7,10 +7,15 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+
 import com.material.labs.codeedit.R
+import com.material.labs.codeedit.interfaces.ConnectionCallbacks
+
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.Session
+import java.io.IOException
 
+// This is a service that keeps a connection to the remote service alive and
 class ConnectionService : Service() {
 
     private val binder = LocalBinder()
@@ -20,6 +25,8 @@ class ConnectionService : Service() {
     var username: String? = null
     private var password: String? = null
     var port: Int = 22
+
+    private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
     // TODO: There is no error handling - that should be in the callbacks too
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -36,24 +43,35 @@ class ConnectionService : Service() {
 
         // Connect to remote
         val connectionThread = Thread {
-            connection = Connection(hostname, port)
-            connection.connect()
-            if (password.isNullOrEmpty()) {
-                connection.authenticateWithNone(username)
-            } else {
-                connection.authenticateWithPassword(username, password)
-            }
+            try {
+                connection = Connection(hostname, port)
+                connection.connect()
+                if (password.isNullOrEmpty()) {
+                    connection.authenticateWithNone(username)
+                } else {
+                    connection.authenticateWithPassword(username, password)
+                }
 
-            // Bring service into foreground and post notification
-            val notificationText =
-                getString(R.string.connected_to) + " " + username + "@" + hostname
-            val notificationBuilder =
-                NotificationCompat.Builder(this, "activeConnectionChannel")
-                .setSmallIcon(R.drawable.ic_file_other)
-                .setContentTitle(getString(R.string.connection_active))
-                .setContentText(notificationText)
-                .setOngoing(true)
-            startForeground(100, notificationBuilder.build())
+                // Bring service into foreground and post notification
+                val notificationText =
+                    getString(R.string.connected_to) + " " + username + "@" + hostname
+                val notificationBuilder =
+                    NotificationCompat.Builder(this, "activeConnectionChannel")
+                        .setSmallIcon(R.drawable.ic_file_other)
+                        .setContentTitle(getString(R.string.connection_active))
+                        .setContentText(notificationText)
+                        .setOngoing(true)
+                startForeground(100, notificationBuilder.build())
+                connectionCallbacks.forEach {
+                    it.onConnected()
+                }
+            } catch (e: IOException) {
+                CodeLogger.logE(e)
+                connectionCallbacks.forEach {
+                    it.onError(e.toString())
+                }
+                stopSelf()
+            }
         }
 
         // Check if we are on a WIFI/Ethernet network
@@ -93,14 +111,23 @@ class ConnectionService : Service() {
     }
 
     fun disconnect() {
+        connectionCallbacks.forEach {
+            it.onDisconnected()
+        }
+
         stopForeground(true)
         stopSelf()
     }
 
     fun isConnected(): Boolean = this::connection.isInitialized
 
-    // TODO: It needs an interface with callbacks, so that the service updates views when something
-    //  happens and not the other way around
+    fun addCallback(callback: ConnectionCallbacks) {
+        connectionCallbacks.add(callback)
+    }
+
+    fun removeCallback(callback: ConnectionCallbacks) {
+        connectionCallbacks.remove(callback)
+    }
 
     override fun onBind(intent: Intent): IBinder {
         return binder
@@ -108,6 +135,10 @@ class ConnectionService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        connectionCallbacks.forEach {
+            it.onDisconnected()
+        }
 
         if (this::connection.isInitialized) {
             Thread {

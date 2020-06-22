@@ -1,6 +1,5 @@
 package com.material.labs.codeedit.views
 
-import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,12 +10,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ScrollView
 
 import com.material.labs.codeedit.R
-import com.material.labs.codeedit.utils.CodeLogger
 import com.material.labs.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
@@ -119,6 +115,8 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             stdin?.close()
             stderr?.close()
         }.start()
-        context.unbindService(serviceConnection)
+        if (isBound) {
+            context.unbindService(serviceConnection)
+        }
     }
 }
