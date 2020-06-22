@@ -1,9 +1,7 @@
 package com.material.labs.codeedit.views
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.app.AlertDialog
+import android.content.*
 import android.graphics.Color
 import android.os.Handler
 import android.os.IBinder
@@ -13,6 +11,7 @@ import android.view.View
 import android.widget.ScrollView
 
 import com.material.labs.codeedit.R
+import com.material.labs.codeedit.interfaces.ConnectionCallbacks
 import com.material.labs.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
@@ -33,30 +32,41 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
 
     private var serviceIntent: Intent
 
+    private val connectionCallbacks = object : ConnectionCallbacks {
+        override fun onConnected() {
+            // Nothing
+        }
+
+        override fun onDisconnected() {
+            Handler(Looper.getMainLooper()).post {
+                this@TerminalView.rootView.textView.append(
+                    "\nConnection terminated"
+                )
+            }
+        }
+
+        override fun onError(error: String) {
+            Handler(Looper.getMainLooper()).post {
+                AlertDialog.Builder(context)
+                    .setTitle("Error")
+                    .setMessage(error)
+                    .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
+                        dialogInterface.dismiss()
+                    }
+                    .show()
+            }
+        }
+    }
+    private var connectionService: ConnectionService? = null
+    private var isBound = false
+
     // Open view
     init {
         inflate(context, R.layout.view_terminal, this)
         this.rootView.setBackgroundColor(Color.BLACK)
 
         serviceIntent = Intent(context, ConnectionService::class.java)
-/* This button is currently unused
-        this.rootView.buttonCommand.setOnClickListener {
-            val alert = Dialog(context)
-            alert.setContentView(R.layout.dialog_command)
-            val commandInput = alert.findViewById<EditText>(R.id.commandInput)
-            val buttonExecute = alert.findViewById<Button>(R.id.buttonExecute)
-            buttonExecute.setOnClickListener {
-                this.rootView.buttonCommand.isEnabled = false
-                alert.dismiss()
-            }
-            alert.show()
-        }
-
- */
     }
-
-    private var connectionService: ConnectionService? = null
-    private var isBound = false
 
     // This thread listens to updates on the sessions output
     val readThread = Thread {
@@ -81,6 +91,8 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             connectionService = binder.getService()
             isBound = true
 
+            connectionService?.addCallback(connectionCallbacks)
+
             // The main network (session) thread
             Thread {
                 session = connectionService?.newSession()
@@ -98,6 +110,8 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+            connectionService?.removeCallback(connectionCallbacks)
+
             connectionService = null
             isBound = false
         }
@@ -115,6 +129,7 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             stdin?.close()
             stderr?.close()
         }.start()
+
         if (isBound) {
             context.unbindService(serviceConnection)
         }

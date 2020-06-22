@@ -1,6 +1,7 @@
 package com.material.labs.codeedit.utils
 
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.app.Service
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,6 +11,7 @@ import androidx.core.app.NotificationCompat
 
 import com.material.labs.codeedit.R
 import com.material.labs.codeedit.interfaces.ConnectionCallbacks
+import com.material.labs.codeedit.receivers.NotificationReceiver
 
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.Session
@@ -28,7 +30,6 @@ class ConnectionService : Service() {
 
     private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
-    // TODO: There is no error handling - that should be in the callbacks too
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         hostname = intent?.getStringExtra("hostname")
         username = intent?.getStringExtra("username")
@@ -53,6 +54,12 @@ class ConnectionService : Service() {
                 }
 
                 // Bring service into foreground and post notification
+                val disconnectIntent =
+                    Intent(this, NotificationReceiver::class.java).apply {
+                        action = NotificationReceiver.SERVER_DISCONNECT
+                    }
+                val disconnectPendingIntent =
+                    PendingIntent.getBroadcast(this, 0, disconnectIntent, 0)
                 val notificationText =
                     getString(R.string.connected_to) + " " + username + "@" + hostname
                 val notificationBuilder =
@@ -61,6 +68,7 @@ class ConnectionService : Service() {
                         .setContentTitle(getString(R.string.connection_active))
                         .setContentText(notificationText)
                         .setOngoing(true)
+                        .addAction(R.drawable.ic_file_other, "Disconnect", disconnectPendingIntent)
                 startForeground(100, notificationBuilder.build())
                 connectionCallbacks.forEach {
                     it.onConnected()

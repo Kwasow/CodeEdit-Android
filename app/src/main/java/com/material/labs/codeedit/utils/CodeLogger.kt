@@ -25,6 +25,10 @@ class CodeLogger {
             e.printStackTrace()
         }
 
+        fun logE(s: String) {
+            Log.e(logTag, s)
+        }
+
         fun logI(s: String) {
             Log.i(logTag, s)
         }

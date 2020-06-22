@@ -1,21 +1,25 @@
 package com.material.labs.codeedit.views
 
+import android.app.AlertDialog
 import android.content.*
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.AttributeSet
 import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.material.labs.codeedit.R
 import com.material.labs.codeedit.adapters.FilesAdapter
+import com.material.labs.codeedit.interfaces.ConnectionCallbacks
 import com.material.labs.codeedit.models.FileDetails
 import com.material.labs.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
+import kotlinx.android.synthetic.main.view_files.view.*
 
 import kotlinx.android.synthetic.main.view_terminal.view.*
 
@@ -37,6 +41,39 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
 
     var path = "./"
 
+    private val connectionCallbacks = object : ConnectionCallbacks {
+        override fun onConnected() {
+            // Nothing
+        }
+
+        override fun onDisconnected() {
+            Handler(Looper.getMainLooper()).post {
+                AlertDialog.Builder(context)
+                    .setTitle("Connection lost")
+                    .setMessage("The connection was closed")
+                    .setPositiveButton("Close files") { dialog: DialogInterface, _: Int ->
+                        dialog.dismiss()
+                        if (context is AppCompatActivity) {
+                            context.finish()
+                        }
+                    }
+                    .show()
+            }
+        }
+
+        override fun onError(error: String) {
+            Handler(Looper.getMainLooper()).post {
+                AlertDialog.Builder(context)
+                    .setTitle("Error")
+                    .setMessage(error)
+                    .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+    }
+
     private var serviceIntent: Intent
 
     init {
@@ -55,6 +92,8 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
             val binder = service as ConnectionService.LocalBinder
             connectionService = binder.getService()
             isBound = true
+
+            connectionService?.addCallback(connectionCallbacks)
 
             val readThread = Thread {
                 var returnString = ""
@@ -88,6 +127,8 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+            connectionService?.removeCallback(connectionCallbacks)
+
             connectionService = null
             isBound = false
             this@FilesView.rootView.textView.append("[DEBUG]: Connection service unbound")

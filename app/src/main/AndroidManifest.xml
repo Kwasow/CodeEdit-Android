@@ -25,6 +25,8 @@
         <activity android:name=".FilesActivity"/>
 
         <service android:name=".utils.ConnectionService"/>
+
+        <receiver android:name=".receivers.NotificationReceiver"/>
     </application>
 
 </manifest>

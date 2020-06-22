@@ -111,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         alert.setContentView(R.layout.dialog_connect)
         val buttonConnect = alert.findViewById<Button>(R.id.buttonConnect)
         buttonConnect.setOnClickListener {
-            println(alert.findViewById<EditText>(R.id.inputHostname).text.toString())
             serviceIntent.putExtra(
                 "hostname",
                 alert.findViewById<EditText>(R.id.inputHostname).text.toString())
