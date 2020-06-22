@@ -6,15 +6,34 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/mainButtonConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:onClick="connect"/>
+
+    <Button
+        android:id="@+id/mainButtonLaunchTerminal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Launch terminal"
-        android:onClick="launchTerminal"/>
+        android:onClick="launchTerminal"
+        android:enabled="false"/>
 
     <Button
+        android:id="@+id/mainButtonLaunchFiles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Launch files"
-        android:onClick="launchFiles"/>
+        android:onClick="launchFiles"
+        android:enabled="false"/>
+
+    <Button
+        android:id="@+id/mainButtonDisconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disconnect"
+        android:onClick="disconnect"
+        android:enabled="false"/>
 
 </LinearLayout>

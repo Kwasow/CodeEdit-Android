@@ -1,9 +1,8 @@
 package com.material.labs.codeedit.views
 
-import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
+import android.content.*
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.util.AttributeSet
 import android.widget.ProgressBar
@@ -14,24 +13,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.material.labs.codeedit.R
 import com.material.labs.codeedit.adapters.FilesAdapter
 import com.material.labs.codeedit.models.FileDetails
-import com.material.labs.codeedit.utils.CodeLogger
-import com.material.labs.codeedit.utils.NetworkState
+import com.material.labs.codeedit.utils.ConnectionService
 
-import com.trilead.ssh2.Connection
-import com.trilead.ssh2.ConnectionInfo
 import com.trilead.ssh2.Session
 
 import kotlinx.android.synthetic.main.view_terminal.view.*
 
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
 // The files view manages getting the files list, navigating through
 // the filesystem and managing it's own ssh session
 class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
-    private var connection: Connection? = null
-    private var connectionInfo: ConnectionInfo? = null
     private var session: Session? = null
 
     private var stdout: InputStream? = null
@@ -44,63 +37,66 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
 
     var path = "./"
 
+    private var serviceIntent: Intent
+
     init {
         inflate(context, R.layout.view_files, this)
 
         loadingIndicator = findViewById(R.id.loadingIndicator)
         viewManager = LinearLayoutManager(context)
+        serviceIntent = Intent(context, ConnectionService::class.java)
     }
 
-    fun connect(hostname: String, user: String, password: String, port: Int = 22) {
+    private var connectionService: ConnectionService? = null
+    private var isBound = false
 
-        val connectionThread = Thread {
-            connection = Connection(hostname, port)
-            try {
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as ConnectionService.LocalBinder
+            connectionService = binder.getService()
+            isBound = true
 
-                connectionInfo = connection?.connect()
-                connection?.authenticateWithPassword(user, password)
+            val readThread = Thread {
+                var returnString = ""
 
-                CodeLogger.logD("Connected")
-                // Reset path and read directories
-                path = "./"
-                cdFile()
+                var x = stdout?.read()
+                while (x != -1) {
+                    returnString += x?.toChar()
+                    x = stdout?.read()
+                }
 
-            } catch (e: IOException) {
-                CodeLogger.logE(e)
-                CodeLogger.errorDialog(context, e)
+                // Close session after read is done and unbind service
+                session?.close()
+                context.unbindService(this)
+
+                // Update files list when the command output ends
+                updateAdapter(returnString)
             }
+
+            Thread {
+                session = connectionService?.newSession()
+
+                stdout = session?.stdout // InputStream
+                stdin = session?.stdin // OutputStreams
+                stderr = session?.stderr // InputStream
+
+                // This will list all files as well as their type
+                session?.execCommand("cd $path && file .* *")
+
+                readThread.start()
+            }.start()
         }
 
-        // Check if we are on a WIFI/Ethernet network
-        if ((NetworkState.type(context) == NetworkState.State.WIFI) or
-            (NetworkState.type(context) == NetworkState.State.ETHERNET)) {
-            connectionThread.start()
-        } else {
-            val builder = AlertDialog.Builder(context)
-            var message = resources.getString(R.string.network_not_wifi)
-            message += " " + when (NetworkState.type(context)) {
-                NetworkState.State.MOBILE ->
-                    resources.getString(R.string.on_mobile)
-                NetworkState.State.OFFLINE ->
-                    resources.getString(R.string.offline)
-                // If error or something else
-                else ->
-                    resources.getString(R.string.something_wrong)
-            }
-
-            builder.setMessage(message)
-            builder.setTitle(R.string.alert)
-            builder.setPositiveButton(R.string.button_continue) { _: DialogInterface, _: Int ->
-                connectionThread.start()
-            }
-            builder.setNegativeButton(R.string.button_cancel) { _: DialogInterface, _: Int ->
-                this.rootView.textView.append(
-                    resources.getString(R.string.connection_interrupted_user))
-            }
-
-            builder.show()
+        override fun onServiceDisconnected(name: ComponentName?) {
+            connectionService = null
+            isBound = false
+            this@FilesView.rootView.textView.append("[DEBUG]: Connection service unbound")
         }
+    }
 
+    fun open() {
+        path = "./"
+        cdFile()
     }
 
     private fun cdFile() {
@@ -109,35 +105,9 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         recyclerView?.visibility = GONE
         loadingIndicator.visibility = VISIBLE
 
-        val readThread = Thread {
-            var returnString = ""
-
-            var x = stdout?.read()
-            while (x != -1) {
-                returnString += x?.toChar()
-                x = stdout?.read()
-            }
-
-            // Close session after read is done
-            session?.close()
-
-            // Update files list when the command output ends
-            updateAdapter(returnString)
-        }
-
         Thread {
-            session = connection?.openSession()
-
-            stdout = session?.stdout // InputStream
-            stdin = session?.stdin // OutputStreams
-            stderr = session?.stderr // InputStream
-
-            // This will list all files as well as their type
-            session?.execCommand("cd $path && file .* *")
-
-            readThread.start()
+            context.bindService(serviceIntent, serviceConnection, Context.BIND_IMPORTANT)
         }.start()
-
     }
 
     private fun updateAdapter(files: String) {
@@ -193,18 +163,16 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         pathList.subList(0, pathList.lastIndex - 1).forEach {
             path += "$it/"
         }
-        CodeLogger.logD(path)
         cdFile()
     }
 
     fun onDestroy() {
         Thread {
             session?.close()
-            connection?.close()
+            stdin?.close()
+            stdout?.close()
+            stderr?.close()
         }.start()
-        stdin?.close()
-        stdout?.close()
-        stderr?.close()
     }
 
 }

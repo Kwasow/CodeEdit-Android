@@ -2,7 +2,6 @@
     <string name="app_name">CodeEdit</string>
 
     <string name="add_server_fab">Add new server</string>
-
     <string name="alert">Alert</string>
     <string name="network_not_wifi">You\'re not connected to a WIFI network.</string>
     <string name="offline">You\'re offline</string>
@@ -10,6 +9,9 @@
     <string name="something_wrong">Something went wrong</string>
     <string name="button_continue">Continue</string>
     <string name="button_cancel">Cancel</string>
-
+    <string name="connected_to">Connected to:</string>
+    <string name="connection_active">Connection is active</string>
     <string name="connection_interrupted_user">The connection was interrupted by the user</string>
+    
+    <string name="no_translation_activeConnectionChannel">Connection active</string>
 </resources>
