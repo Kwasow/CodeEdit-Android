@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ServerDetailsActivity">
+
+    <TextView
+        android:id="@+id/serverName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/serverAddressInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/server_address"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/serverName"/>
+
+    <TextView
+        android:id="@+id/serverUsernameAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        app:layout_constraintTop_toTopOf="@id/serverAddressInfo"
+        app:layout_constraintStart_toEndOf="@id/serverAddressInfo"/>
+
+    <TextView
+        android:id="@+id/serverOSInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/server_os"
+        app:layout_constraintTop_toBottomOf="@id/serverAddressInfo"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/serverOS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        app:layout_constraintTop_toTopOf="@id/serverOSInfo"
+        app:layout_constraintStart_toEndOf="@id/serverOSInfo"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/serverOSInfo"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/mainButtonConnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect"
+            android:onClick="connect"/>
+
+        <Button
+            android:id="@+id/mainButtonLaunchTerminal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Launch terminal"
+            android:onClick="launchTerminal"
+            android:enabled="false"/>
+
+        <Button
+            android:id="@+id/mainButtonLaunchFiles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Launch files"
+            android:onClick="launchFiles"
+            android:enabled="false"/>
+
+        <Button
+            android:id="@+id/mainButtonDisconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disconnect"
+            android:onClick="disconnect"
+            android:enabled="false"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

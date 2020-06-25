@@ -1,12 +1,15 @@
 package com.material.labs.codeedit.utils
 
 import android.content.Context
-import java.io.File
-import java.io.IOException
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.*
 
-data class RemoteInfoManager(var alias: String, var hostname: String, var username: String, var port: Int = 22) {
+data class RemoteInfoManager(
+    var alias: String,
+    var hostname: String,
+    var username: String,
+    var os: String = "unknown",
+    var port: Int = 22
+) : Serializable {
 
     // All these functions are static for ease of use
     companion object {
@@ -18,65 +21,85 @@ data class RemoteInfoManager(var alias: String, var hostname: String, var userna
             val serverList = mutableListOf<RemoteInfoManager>()
 
             fileList?.forEach { file ->
-                val inputStream = context.openFileInput(file.toString())
+                val inputStream = FileInputStream(file.toString())
                 val objectInputStream = ObjectInputStream(inputStream)
                 val tmp: RemoteInfoManager = objectInputStream.readObject() as RemoteInfoManager
 
                 serverList.add(tmp)
+
+                objectInputStream.close()
+                inputStream.close()
             }
 
             return serverList
         }
-
-        // The following functions return false if something failed and there was an error
-
-        // Save the given server info to a file
-        fun save(info: RemoteInfoManager, context: Context) : Boolean {
-            val file = File(context.filesDir.toString() + "/servers/" + info.alias)
-
-            // Do not attempt to save the info if a server with the same alias already exists
-            if (file.exists()) throw IOException("Server with this alias already exists")
-
-            try {
-                val outputStream = context.openFileOutput(file.toString(), Context.MODE_PRIVATE)
-                val objectOutputStream = ObjectOutputStream(outputStream)
-                objectOutputStream.writeObject(info)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return false
-            }
-
-            return true
-        }
-
-        // Delete a server entry
-        fun delete(alias: String, context: Context) : Boolean {
-            val file = File(context.filesDir.toString() + "/servers/" + alias)
-
-            // Just make sure it exists
-            if (!file.exists()) return false
-
-            return file.delete()
-        }
-
-        fun update(aliasOld: String, info: RemoteInfoManager, context: Context) : Boolean {
-            val fileOld = File(context.filesDir.toString() + "/servers/" + aliasOld)
-            val fileNew = File(context.filesDir.toString() + "/servers/" + info.alias)
-
-            // Create new file and save
-            val outputStream = context.openFileOutput(fileNew.toString(), Context.MODE_PRIVATE)
-            val objectOutputStream = ObjectOutputStream(outputStream)
-            objectOutputStream.writeObject(info)
-
-            // Check if it saved correctly and delete old file
-            return if (fileNew.exists()) {
-                fileOld.delete()
-                true
-            } else {
-                false
-            }
-        }
-
     }
 
+    // The following functions return false if something failed and there was an error
+
+    // Save the given server info to a file
+    fun save(context: Context) : Boolean {
+        val storageDir = File(context.filesDir.toString() + "/servers/")
+        val file = File(storageDir.toString() + "/" + toFilename(alias))
+
+        storageDir.mkdirs()
+
+        // Do not attempt to save the info if a server with the same alias already exists
+        if (file.exists()) throw IOException("Server with this alias already exists")
+
+        try {
+            val outputStream = FileOutputStream(file)
+            val objectOutputStream = ObjectOutputStream(outputStream)
+            objectOutputStream.writeObject(this)
+            objectOutputStream.close()
+            outputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        }
+
+        return true
+    }
+
+    // Delete a server entry
+    fun delete(context: Context) : Boolean {
+        val file = File(context.filesDir.toString() + "/servers/" + toFilename(alias))
+
+        // Just make sure it exists
+        if (!file.exists()) return false
+
+        return file.delete()
+    }
+
+    fun update(info: RemoteInfoManager, context: Context) : Boolean {
+        val fileOld = File(context.filesDir.toString() + "/servers/" + toFilename(alias))
+        val fileNew = File(context.filesDir.toString() + "/servers/" + toFilename(info.alias))
+
+        // Create new file and save
+        // This may overwrite the old file if alias stays the same
+        val outputStream = context.openFileOutput(fileNew.toString(), Context.MODE_PRIVATE)
+        val objectOutputStream = ObjectOutputStream(outputStream)
+        objectOutputStream.writeObject(info)
+
+        // Check if it saved correctly and delete old file
+        return if (fileNew.exists()) {
+            if (toFilename(alias) != toFilename(info.alias)) {
+                fileOld.delete()
+            }
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun toFilename(dir: String): String? {
+        return dir
+            .replace(" ", "")
+            .replace(".", "")
+            .replace("?", "")
+            .replace("'", "")
+            .replace("/", "")
+            .replace(":", "")
+            .replace("-", "") + ".remoteInfo"
+    }
 }

@@ -19,7 +19,6 @@ import com.material.labs.codeedit.models.FileDetails
 import com.material.labs.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
-import kotlinx.android.synthetic.main.view_files.view.*
 
 import kotlinx.android.synthetic.main.view_terminal.view.*
 

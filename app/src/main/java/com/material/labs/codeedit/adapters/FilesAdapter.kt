@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.material.labs.codeedit.R
 import com.material.labs.codeedit.models.FileDetails
-import com.material.labs.codeedit.utils.CodeLogger
 import com.material.labs.codeedit.views.FilesView
 
 class FilesAdapter(private val dataset: MutableList<FileDetails>, private val filesView: FilesView) :

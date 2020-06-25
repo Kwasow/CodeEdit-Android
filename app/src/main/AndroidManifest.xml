@@ -21,6 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ServerAddActivity"/>
+        <activity android:name=".ServerDetailsActivity"/>
         <activity android:name=".TerminalActivity"/>
         <activity android:name=".FilesActivity"/>
 

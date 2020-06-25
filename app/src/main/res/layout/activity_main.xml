@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/mainButtonConnect"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/serverListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/noServersText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect"
-        android:onClick="connect"/>
+        android:layout_gravity="center"
+        android:text="@string/no_servers_configured"
+        android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/mainButtonLaunchTerminal"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addServerFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Launch terminal"
-        android:onClick="launchTerminal"
-        android:enabled="false"/>
+        android:layout_gravity="bottom|end"
+        android:onClick="addServer"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/add_server_fab"
+        app:srcCompat="@drawable/ic_plus_white"/>
 
-    <Button
-        android:id="@+id/mainButtonLaunchFiles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Launch files"
-        android:onClick="launchFiles"
-        android:enabled="false"/>
-
-    <Button
-        android:id="@+id/mainButtonDisconnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Disconnect"
-        android:onClick="disconnect"
-        android:enabled="false"/>
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
