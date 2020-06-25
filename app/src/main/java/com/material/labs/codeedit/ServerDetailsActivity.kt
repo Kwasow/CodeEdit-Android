@@ -15,7 +15,6 @@ import com.material.labs.codeedit.interfaces.ConnectionCallbacks
 import com.material.labs.codeedit.utils.ConnectionService
 import com.material.labs.codeedit.utils.RemoteInfoManager
 
-// TODO: Test this
 class ServerDetailsActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityServerDetailsBinding
 
@@ -34,8 +33,6 @@ class ServerDetailsActivity : AppCompatActivity() {
             val binder = service as ConnectionService.LocalBinder
             connectionService = binder.getService()
             isBound = true
-
-            // TODO: Is this ready?
 
             connectionService?.addCallback(connectionCallbacks)
 
@@ -125,7 +122,7 @@ class ServerDetailsActivity : AppCompatActivity() {
             if (!isBound) {
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             }
-            
+
             startService(serviceIntent)
             alert.dismiss()
         }

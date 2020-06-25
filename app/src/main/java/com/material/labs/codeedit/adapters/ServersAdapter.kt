@@ -39,8 +39,8 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>) : Recy
 
         holder.serverName.text = dataset[position].alias
         holder.serverUsernameAddress.text =
-            "${dataset[position].username}@${dataset[position].hostname}"
-        holder.serverOs.text = dataset[position].os
+            " ${dataset[position].username}@${dataset[position].hostname}"
+        holder.serverOs.text = " " + dataset[position].os
     }
 
     override fun getItemCount(): Int {
