@@ -31,6 +31,8 @@ class ConnectionService : Service() {
     private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // TODO: Pass RemoteInfoManager object instead, check if has OS type and if not
+        //  then check for it and update saved object
         hostname = intent?.getStringExtra("hostname")
         username = intent?.getStringExtra("username")
         password = intent?.getStringExtra("password")

@@ -167,15 +167,11 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
                     return@foreach
                 }
 
-                // TODO: Can this somehow be a when statement?
-                val tmpType: FileDetails.Type = if (tmp[1].contains("directory")) {
-                    FileDetails.Type.DIRECTORY
-                } else if (tmp[1].contains("text")) {
-                    FileDetails.Type.TEXT
-                } else if (tmp[1].contains("executable") || tmp[1].contains("script")) {
-                    FileDetails.Type.BINARY
-                } else {
-                    FileDetails.Type.OTHER
+                val tmpType: FileDetails.Type = when {
+                    tmp[1].contains("directory") -> FileDetails.Type.DIRECTORY
+                    tmp[1].contains("text") -> FileDetails.Type.TEXT
+                    tmp[1].contains("executable") -> FileDetails.Type.BINARY
+                    else -> FileDetails.Type.OTHER
                 }
                 filesArray.add(FileDetails(tmp[0], tmpType))
             }
