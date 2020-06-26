@@ -23,6 +23,7 @@ class ConnectionService : Service() {
     private val binder = LocalBinder()
 
     private lateinit var connection: Connection
+    private lateinit var details: RemoteInfoManager
     var hostname: String? = null
     var username: String? = null
     private var password: String? = null
@@ -31,13 +32,12 @@ class ConnectionService : Service() {
     private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // TODO: Pass RemoteInfoManager object instead, check if has OS type and if not
-        //  then check for it and update saved object
-        hostname = intent?.getStringExtra("hostname")
-        username = intent?.getStringExtra("username")
-        password = intent?.getStringExtra("password")
-        // Keep 22 if intent is null
-        port = intent?.getIntExtra("port", 22) ?: 22
+        details = intent!!.getSerializableExtra("details") as RemoteInfoManager
+        hostname = details.hostname
+        username = details.username
+        password = intent.getStringExtra("password")
+        // Keep 22 if it is null for some reason
+        port = details.port
 
         // Stop the service if any important details is missing
         if (hostname.isNullOrEmpty().or(username.isNullOrEmpty())) {
@@ -72,6 +72,9 @@ class ConnectionService : Service() {
                         .setOngoing(true)
                         .addAction(R.drawable.ic_file_other, "Disconnect", disconnectPendingIntent)
                 startForeground(100, notificationBuilder.build())
+
+                checkOS()
+
                 connectionCallbacks.forEach {
                     it.onConnected()
                 }
@@ -141,6 +144,47 @@ class ConnectionService : Service() {
 
     fun removeCallback(callback: ConnectionCallbacks) {
         connectionCallbacks.remove(callback)
+    }
+
+    // TODO: This is fine for checking, but the UI shoudl update the OS as well without the need
+    //  to restart the app
+    private fun checkOS() {
+        // If hasn't been checked or wasn't recognized by a previous version
+        if (details.os == "Not checked"
+            || details.os == "unknown") {
+
+            val session = connection.openSession()
+            val stdout = session.stdout
+            session.execCommand("uname")
+
+            Thread {
+                var returnString = ""
+
+                var x = stdout?.read()
+                while (x != -1) {
+                    returnString += x?.toChar()
+                    x = stdout?.read()
+                }
+
+                // Close session after read is done
+                session?.close()
+
+                val os: String = when (returnString.removeSuffix("\n")) {
+                    "Linux" -> "Linux"
+                    "Darwin" -> "macOS"
+                    else -> "unknown"
+                }
+
+                val newDetails = RemoteInfoManager(
+                    details.alias,
+                    details.hostname,
+                    details.username,
+                    os,
+                    details.port
+                )
+                details.update(newDetails, this)
+            }.start()
+        }
     }
 
     override fun onBind(intent: Intent): IBinder {

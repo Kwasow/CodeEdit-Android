@@ -7,7 +7,7 @@ data class RemoteInfoManager(
     var alias: String,
     var hostname: String,
     var username: String,
-    var os: String = "unknown",
+    var os: String = "Not checked",
     var port: Int = 22
 ) : Serializable {
 
@@ -77,12 +77,13 @@ data class RemoteInfoManager(
 
         // Create new file and save
         // This may overwrite the old file if alias stays the same
-        val outputStream = context.openFileOutput(fileNew.toString(), Context.MODE_PRIVATE)
+        val outputStream = FileOutputStream(fileNew)
         val objectOutputStream = ObjectOutputStream(outputStream)
         objectOutputStream.writeObject(info)
 
         // Check if it saved correctly and delete old file
         return if (fileNew.exists()) {
+            // Only if alias has changed
             if (toFilename(alias) != toFilename(info.alias)) {
                 fileOld.delete()
             }

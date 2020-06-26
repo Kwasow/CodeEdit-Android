@@ -20,6 +20,7 @@ class ServerDetailsActivity : AppCompatActivity() {
 
     private lateinit var serviceIntent: Intent
 
+    private lateinit var details: RemoteInfoManager
     private var hostname: String? = null
     private var username: String? = null
     private var port: Int? = null
@@ -57,7 +58,7 @@ class ServerDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val details = intent.getSerializableExtra("details") as RemoteInfoManager
+        details = intent.getSerializableExtra("details") as RemoteInfoManager
         hostname = details.hostname
         username = details.username
         port = details.port
@@ -114,9 +115,7 @@ class ServerDetailsActivity : AppCompatActivity() {
         alert.setContentView(R.layout.dialog_password)
         val buttonConnect = alert.findViewById<Button>(R.id.buttonConnect)
         buttonConnect.setOnClickListener {
-            serviceIntent.putExtra("hostname", hostname)
-            serviceIntent.putExtra("username", username)
-            serviceIntent.putExtra("port", port)
+            serviceIntent.putExtra("details", details)
             serviceIntent.putExtra(
                 "password",
                 alert.findViewById<EditText>(R.id.inputPassword).text.toString())
