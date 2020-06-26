@@ -12,7 +12,7 @@ import com.material.labs.codeedit.R
 import com.material.labs.codeedit.ServerDetailsActivity
 import com.material.labs.codeedit.utils.RemoteInfoManager
 
-class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var rootCard: CardView = itemView.findViewById(R.id.serverRootCard)
@@ -20,6 +20,8 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>) : Recy
         var serverName: TextView = itemView.findViewById(R.id.serverName)
         var serverUsernameAddress: TextView = itemView.findViewById(R.id.serverUsernameAddress)
         var serverOs: TextView = itemView.findViewById(R.id.serverOS)
+
+        var serverStatus: TextView = itemView.findViewById(R.id.serverStatus)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,6 +43,13 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>) : Recy
         holder.serverUsernameAddress.text =
             " ${dataset[position].username}@${dataset[position].hostname}"
         holder.serverOs.text = " " + dataset[position].os
+
+        if (connected != null &&
+            connected == "${dataset[position].username}@${dataset[position].hostname}:${dataset[position].port}") {
+            holder.serverStatus.visibility = View.VISIBLE
+        } else {
+            holder.serverStatus.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {

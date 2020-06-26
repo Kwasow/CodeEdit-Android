@@ -11,7 +11,7 @@
     app:cardCornerRadius="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:orientation="vertical">
@@ -56,6 +56,17 @@
             android:textStyle="italic"
             app:layout_constraintTop_toTopOf="@id/serverOSInfo"
             app:layout_constraintStart_toEndOf="@id/serverOSInfo"/>
+
+        <TextView
+            android:id="@+id/serverStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/active"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_green_light"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

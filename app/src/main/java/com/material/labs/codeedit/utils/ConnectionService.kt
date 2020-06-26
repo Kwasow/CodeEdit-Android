@@ -31,8 +31,6 @@ class ConnectionService : Service() {
     private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        println("onStartCommand()")
-
         hostname = intent?.getStringExtra("hostname")
         username = intent?.getStringExtra("username")
         password = intent?.getStringExtra("password")
@@ -127,6 +125,8 @@ class ConnectionService : Service() {
 
         stopForeground(true)
         stopSelf()
+        // stopSelf() does not destroy the service
+        onDestroy()
     }
 
     fun isConnected(): Boolean = this::connection.isInitialized
@@ -147,8 +147,6 @@ class ConnectionService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        println("onDestroy()")
 
         connectionCallbacks.forEach {
             it.onDisconnected()

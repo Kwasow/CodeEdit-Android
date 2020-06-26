@@ -64,10 +64,12 @@ class ServerDetailsActivity : AppCompatActivity() {
 
         layoutBinding = ActivityServerDetailsBinding.inflate(layoutInflater)
 
+        serviceIntent = Intent(this, ConnectionService::class.java)
+
         layoutBinding.serverName.text = details.alias
         layoutBinding.serverUsernameAddress.text =
-            "$username@$hostname"
-        layoutBinding.serverOS.text = details.os
+            " $username@$hostname"
+        layoutBinding.serverOS.text = " " + details.os
 
         connectionCallbacks = object : ConnectionCallbacks {
             override fun onConnected() {

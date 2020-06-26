@@ -5,6 +5,7 @@
     <string name="no_servers_configured">No servers configured</string>
     <string name="server_address">Address:</string>
     <string name="server_os">Server OS:</string>
+    <string name="active">Active</string>
     <string name="alert">Alert</string>
     <string name="network_not_wifi">You\'re not connected to a WIFI network.</string>
     <string name="offline">You\'re offline</string>
