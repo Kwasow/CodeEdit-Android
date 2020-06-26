@@ -18,6 +18,20 @@ class MainActivity : AppCompatActivity() {
 
         layoutBinding = ActivityMainBinding.inflate(layoutInflater)
 
+        // Load servers
+        updateServerList()
+
+        setContentView(layoutBinding.root)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Check if server list changed
+        updateServerList()
+    }
+
+    fun updateServerList() {
         val servers = RemoteInfoManager.get(this)
         // Check if there are any servers saved
         if (servers.isEmpty()) {
@@ -29,8 +43,6 @@ class MainActivity : AppCompatActivity() {
                 visibility = View.VISIBLE
             }
         }
-
-        setContentView(layoutBinding.root)
     }
 
     fun addServer(v: View) {
