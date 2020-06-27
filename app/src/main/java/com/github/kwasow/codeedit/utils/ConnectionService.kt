@@ -113,10 +113,10 @@ class ConnectionService : Service() {
 
             builder.setMessage(message)
             builder.setTitle(R.string.alert)
-            builder.setPositiveButton(R.string.button_continue) { _: DialogInterface, _: Int ->
+            builder.setPositiveButton(R.string.text_continue) { _: DialogInterface, _: Int ->
                 connectionThread.start()
             }
-            builder.setNegativeButton(R.string.button_cancel) { _: DialogInterface, _: Int ->
+            builder.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int ->
                 stopSelf()
             }
 

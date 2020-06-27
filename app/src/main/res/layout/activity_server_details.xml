@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: Add string resources here -->
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,14 +59,14 @@
             android:id="@+id/mainButtonConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connect"
+            android:text="@string/connect"
             android:onClick="connect"/>
 
         <Button
             android:id="@+id/mainButtonLaunchIDE"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Launch IDE"
+            android:text="@string/launch_ide"
             android:onClick="launchIDE"
             android:enabled="false"/>
 
@@ -75,7 +74,7 @@
             android:id="@+id/mainButtonDisconnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Disconnect"
+            android:text="@string/disconnect"
             android:onClick="disconnect"
             android:enabled="false"/>
 
@@ -83,14 +82,14 @@
             android:id="@+id/mainButtonEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit"
+            android:text="@string/edit"
             android:onClick="edit"/>
 
         <Button
             android:id="@+id/mainButtonDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
+            android:text="@string/delete"
             android:onClick="delete"/>
 
     </LinearLayout>

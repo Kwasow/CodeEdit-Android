@@ -12,11 +12,24 @@
     <string name="on_mobile">You\'re on a mobile connection</string>
     <string name="something_wrong">Something went wrong</string>
     <string name="something_wrong_2">Well… If you\'re seeing this, the devs have most certainly screwed up!</string>
-    <string name="button_continue">Continue</string>
-    <string name="button_cancel">Cancel</string>
+    <string name="text_continue">Continue</string>
+    <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
     <string name="connected_to">Connected to:</string>
     <string name="connection_active">Connection is active</string>
     <string name="connection_interrupted_user">The connection was interrupted by the user</string>
+    <string name="alias">Alias</string>
+    <string name="hostname">Hostname</string>
+    <string name="username">Username</string>
+    <string name="port_optional">Port (optional)</string>
+    <string name="save">Save</string>
+    <string name="launch_ide">Launch IDE</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="password">Password</string>
+    <string name="work_underway">Nothing to see here… yet</string>
+    <string name="command">Command</string>
     
     <string name="no_translation_activeConnectionChannel">Connection active</string>
 </resources>

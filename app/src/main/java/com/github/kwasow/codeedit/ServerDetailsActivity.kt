@@ -95,7 +95,7 @@ class ServerDetailsActivity : AppCompatActivity() {
                     AlertDialog.Builder(this@ServerDetailsActivity)
                         .setTitle("Error")
                         .setMessage(error)
-                        .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
+                        .setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
                             dialogInterface.dismiss()
                         }
                         .show()
