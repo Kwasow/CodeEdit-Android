@@ -1,6 +1,5 @@
 package com.github.kwasow.codeedit.views
 
-import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
 import android.os.Handler
@@ -11,7 +10,6 @@ import android.view.View
 import android.widget.ScrollView
 
 import com.github.kwasow.codeedit.R
-import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
@@ -32,31 +30,6 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
 
     private var serviceIntent: Intent
 
-    private val connectionCallbacks = object : ConnectionCallbacks {
-        override fun onConnected() {
-            // Nothing
-        }
-
-        override fun onDisconnected() {
-            Handler(Looper.getMainLooper()).post {
-                this@TerminalView.rootView.textView.append(
-                    "\nConnection terminated"
-                )
-            }
-        }
-
-        override fun onError(error: String) {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(context)
-                    .setTitle("Error")
-                    .setMessage(error)
-                    .setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int ->
-                        dialogInterface.dismiss()
-                    }
-                    .show()
-            }
-        }
-    }
     private var connectionService: ConnectionService? = null
     private var isBound = false
 
@@ -91,8 +64,6 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
             connectionService = binder.getService()
             isBound = true
 
-            connectionService?.addCallback(connectionCallbacks)
-
             // The main network (session) thread
             Thread {
                 session = connectionService?.newSession()
@@ -110,8 +81,6 @@ class TerminalView(context: Context, attrs: AttributeSet) : ScrollView(context, 
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            connectionService?.removeCallback(connectionCallbacks)
-
             connectionService = null
             isBound = false
         }

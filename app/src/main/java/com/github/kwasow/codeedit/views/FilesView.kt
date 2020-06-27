@@ -1,20 +1,17 @@
 package com.github.kwasow.codeedit.views
 
-import android.app.AlertDialog
 import android.content.*
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.AttributeSet
 import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.adapters.FilesAdapter
-import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.models.FileDetails
 import com.github.kwasow.codeedit.utils.ConnectionService
 

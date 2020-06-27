@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+
 import com.github.kwasow.codeedit.databinding.ActivityServerDetailsBinding
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.utils.ConnectionService
