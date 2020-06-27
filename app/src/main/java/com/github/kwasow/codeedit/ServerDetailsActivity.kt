@@ -43,8 +43,7 @@ class ServerDetailsActivity : AppCompatActivity() {
                 connectionService?.currentHostname() == "$username@$hostname:$port") {
                 // Update buttons
                 layoutBinding.mainButtonConnect.isEnabled = false
-                layoutBinding.mainButtonLaunchTerminal.isEnabled = true
-                layoutBinding.mainButtonLaunchFiles.isEnabled = true
+                layoutBinding.mainButtonLaunchIDE.isEnabled = true
                 layoutBinding.mainButtonDisconnect.isEnabled = true
             }
         }
@@ -77,8 +76,7 @@ class ServerDetailsActivity : AppCompatActivity() {
             override fun onConnected() {
                 runOnUiThread {
                     layoutBinding.mainButtonConnect.isEnabled = false
-                    layoutBinding.mainButtonLaunchTerminal.isEnabled = true
-                    layoutBinding.mainButtonLaunchFiles.isEnabled = true
+                    layoutBinding.mainButtonLaunchIDE.isEnabled = true
                     layoutBinding.mainButtonDisconnect.isEnabled = true
                 }
             }
@@ -86,8 +84,7 @@ class ServerDetailsActivity : AppCompatActivity() {
             override fun onDisconnected() {
                 runOnUiThread {
                     layoutBinding.mainButtonConnect.isEnabled = true
-                    layoutBinding.mainButtonLaunchTerminal.isEnabled = false
-                    layoutBinding.mainButtonLaunchFiles.isEnabled = false
+                    layoutBinding.mainButtonLaunchIDE.isEnabled = false
                     layoutBinding.mainButtonDisconnect.isEnabled = false
                 }
             }
@@ -145,14 +142,8 @@ class ServerDetailsActivity : AppCompatActivity() {
 
     }
 
-    // TODO: These two launch things have to be replaced with one single launchIDE
-    fun launchTerminal(v: View) {
-        val intent = Intent(this, TerminalActivity::class.java)
-        startActivity(intent)
-    }
-
-    fun launchFiles(v: View) {
-        val intent = Intent(this, FilesActivity::class.java)
+    fun launchIDE(v: View) {
+        val intent = Intent(this, IDEActivity::class.java)
         startActivity(intent)
     }
 
@@ -181,6 +172,8 @@ class ServerDetailsActivity : AppCompatActivity() {
         details.delete(this)
         finish()
     }
+
+    // TODO: Edit server details
 
     override fun onDestroy() {
         super.onDestroy()

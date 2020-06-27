@@ -23,8 +23,7 @@
         </activity>
         <activity android:name="com.github.kwasow.codeedit.ServerAddActivity"/>
         <activity android:name="com.github.kwasow.codeedit.ServerDetailsActivity"/>
-        <activity android:name="com.github.kwasow.codeedit.TerminalActivity"/>
-        <activity android:name="com.github.kwasow.codeedit.FilesActivity"/>
+        <activity android:name="com.github.kwasow.codeedit.IDEActivity"/>
 
         <service android:name="com.github.kwasow.codeedit.utils.ConnectionService"/>
 

@@ -11,6 +11,7 @@
     <string name="offline">You\'re offline</string>
     <string name="on_mobile">You\'re on a mobile connection</string>
     <string name="something_wrong">Something went wrong</string>
+    <string name="something_wrong_2">Well… If you\'re seeing this, the devs have most certainly screwed up!</string>
     <string name="button_continue">Continue</string>
     <string name="button_cancel">Cancel</string>
     <string name="connected_to">Connected to:</string>

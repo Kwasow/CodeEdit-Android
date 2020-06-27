@@ -40,39 +40,6 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
 
     var path = "./"
 
-    private val connectionCallbacks = object : ConnectionCallbacks {
-        override fun onConnected() {
-            // Nothing
-        }
-
-        override fun onDisconnected() {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(context)
-                    .setTitle("Connection lost")
-                    .setMessage("The connection was closed")
-                    .setPositiveButton("Close files") { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-                        if (context is AppCompatActivity) {
-                            context.finish()
-                        }
-                    }
-                    .show()
-            }
-        }
-
-        override fun onError(error: String) {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(context)
-                    .setTitle("Error")
-                    .setMessage(error)
-                    .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-                    }
-                    .show()
-            }
-        }
-    }
-
     private var serviceIntent: Intent
 
     init {
@@ -91,8 +58,6 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
             val binder = service as ConnectionService.LocalBinder
             connectionService = binder.getService()
             isBound = true
-
-            connectionService?.addCallback(connectionCallbacks)
 
             val readThread = Thread {
                 var returnString = ""
@@ -126,8 +91,6 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            connectionService?.removeCallback(connectionCallbacks)
-
             connectionService = null
             isBound = false
             this@FilesView.rootView.textView.append("[DEBUG]: Connection service unbound")

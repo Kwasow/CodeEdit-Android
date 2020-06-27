@@ -63,19 +63,11 @@
             android:onClick="connect"/>
 
         <Button
-            android:id="@+id/mainButtonLaunchTerminal"
+            android:id="@+id/mainButtonLaunchIDE"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Launch terminal"
-            android:onClick="launchTerminal"
-            android:enabled="false"/>
-
-        <Button
-            android:id="@+id/mainButtonLaunchFiles"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Launch files"
-            android:onClick="launchFiles"
+            android:text="Launch IDE"
+            android:onClick="launchIDE"
             android:enabled="false"/>
 
         <Button

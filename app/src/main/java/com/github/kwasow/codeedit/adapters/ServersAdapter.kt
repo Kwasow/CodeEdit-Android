@@ -15,6 +15,7 @@ import com.github.kwasow.codeedit.utils.RemoteInfoManager
 class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        // TODO: This should use layout binding
         var rootCard: CardView = itemView.findViewById(R.id.serverRootCard)
 
         var serverName: TextView = itemView.findViewById(R.id.serverName)
