@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- TODO: Add string resources here -->
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -77,6 +78,13 @@
             android:text="Disconnect"
             android:onClick="disconnect"
             android:enabled="false"/>
+
+        <Button
+            android:id="@+id/mainButtonEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:onClick="edit"/>
 
         <Button
             android:id="@+id/mainButtonDelete"

@@ -3,16 +3,29 @@ package com.github.kwasow.codeedit
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+
 import com.github.kwasow.codeedit.databinding.ActivityServerAddBinding
 import com.github.kwasow.codeedit.utils.RemoteInfoManager
 
 class ServerAddActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityServerAddBinding
 
+    var details: RemoteInfoManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        details = intent?.getSerializableExtra("details") as RemoteInfoManager
+
         layoutBinding = ActivityServerAddBinding.inflate(layoutInflater)
+
+        if (details != null) {
+            layoutBinding.inputAlias.append(details!!.alias)
+            layoutBinding.inputHostname.append(details!!.hostname)
+            layoutBinding.inputUsername.append(details!!.username)
+            layoutBinding.inputPort.text.clear()
+            layoutBinding.inputPort.append(details!!.port.toString())
+        }
 
         setContentView(layoutBinding.root)
     }
@@ -24,7 +37,14 @@ class ServerAddActivity : AppCompatActivity() {
             layoutBinding.inputHostname.text.toString(),
             layoutBinding.inputUsername.text.toString()
         )
-        info.save(this)
+        if (details == null) {
+            info.save(this)
+        } else {
+            info.os = details!!.os
+            info.port = layoutBinding.inputPort.text.toString().toInt()
+
+            details!!.update(info, this)
+        }
         finish()
     }
 

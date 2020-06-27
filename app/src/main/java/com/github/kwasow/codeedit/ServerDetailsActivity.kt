@@ -159,6 +159,13 @@ class ServerDetailsActivity : AppCompatActivity() {
         serviceIntent = Intent(this, ConnectionService::class.java)
     }
 
+    fun edit(v: View) {
+        val intent = Intent(this, ServerAddActivity::class.java)
+        intent.putExtra("details", details)
+        startActivity(intent)
+        finish()
+    }
+
     fun delete(v: View) {
         if (!isBound) {
             bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -173,8 +180,6 @@ class ServerDetailsActivity : AppCompatActivity() {
         details.delete(this)
         finish()
     }
-
-    // TODO: Edit server details
 
     override fun onDestroy() {
         super.onDestroy()
