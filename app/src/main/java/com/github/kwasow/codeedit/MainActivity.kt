@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private var connectionService: ConnectionService? = null
     private var isBound = false
 
-    private lateinit var servers: MutableList<RemoteInfoManager>
     private var current: String? = null
     private var connected: Boolean? = null
 
@@ -94,9 +93,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Connect to service and update server list
         serviceIntent = Intent(this, ConnectionService::class.java)
-        servers = RemoteInfoManager.get(this)
 
         setContentView(layoutBinding.root)
     }
@@ -118,6 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateServerList(connected: String?) {
+        val servers = RemoteInfoManager.get(this)
         // Check if there are any servers saved
         if (servers.isEmpty()) {
             layoutBinding.noServersText.visibility = View.VISIBLE

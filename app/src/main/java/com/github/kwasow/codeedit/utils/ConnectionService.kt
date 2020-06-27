@@ -49,10 +49,15 @@ class ConnectionService : Service() {
             try {
                 connection = Connection(hostname, port)
                 connection.connect()
-                if (password.isNullOrEmpty()) {
+                // TODO: Replace with "keyboard-interactive" in the future
+                val connected = if (password.isNullOrEmpty()) {
                     connection.authenticateWithNone(username)
                 } else {
                     connection.authenticateWithPassword(username, password)
+                }
+
+                if (!connected) {
+                    throw IOException("There was a problem connecting to $hostname:$port")
                 }
 
                 // Bring service into foreground and post notification
@@ -84,6 +89,8 @@ class ConnectionService : Service() {
                     it.onError(e.toString())
                 }
                 stopSelf()
+                hostname = null; username = null
+                onDestroy()
             }
         }
 
@@ -182,7 +189,16 @@ class ConnectionService : Service() {
                     os,
                     details.port
                 )
+
+                // Update saved details
                 details.update(newDetails, this)
+
+                // Update this service's details
+                details = newDetails
+
+                connectionCallbacks.forEach {
+                    it.onServerOSUpdated(details.os)
+                }
             }.start()
         }
     }

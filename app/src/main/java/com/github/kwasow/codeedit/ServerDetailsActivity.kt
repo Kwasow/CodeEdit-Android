@@ -29,6 +29,7 @@ class ServerDetailsActivity : AppCompatActivity() {
     private var connectionService: ConnectionService? = null
     private var isBound = false
 
+    @SuppressLint("SetTextI18n")
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as ConnectionService.LocalBinder
@@ -70,7 +71,7 @@ class ServerDetailsActivity : AppCompatActivity() {
         layoutBinding.serverName.text = details.alias
         layoutBinding.serverUsernameAddress.text =
             " $username@$hostname"
-        layoutBinding.serverOS.text = " " + details.os
+        layoutBinding.serverOS.text = " ${details.os}"
 
         connectionCallbacks = object : ConnectionCallbacks {
             override fun onConnected() {
@@ -102,6 +103,14 @@ class ServerDetailsActivity : AppCompatActivity() {
                         .show()
                 }
             }
+
+            override fun onServerOSUpdated(newOS: String) {
+                super.onServerOSUpdated(newOS)
+
+                runOnUiThread {
+                    layoutBinding.serverOS.text = " $newOS"
+                }
+            }
         }
 
         serviceIntent = Intent(this, ConnectionService::class.java)
@@ -124,6 +133,7 @@ class ServerDetailsActivity : AppCompatActivity() {
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             }
 
+            // Start the service
             startService(serviceIntent)
             alert.dismiss()
         }
