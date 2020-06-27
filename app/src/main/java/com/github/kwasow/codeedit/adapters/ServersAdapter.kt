@@ -5,31 +5,30 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.ServerDetailsActivity
+import com.github.kwasow.codeedit.databinding.ViewServerBinding
 import com.github.kwasow.codeedit.utils.RemoteInfoManager
 
-class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?)
+    : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // TODO: This should use layout binding
-        var rootCard: CardView = itemView.findViewById(R.id.serverRootCard)
+    class ViewHolder(itemView: View, layoutBinding: ViewServerBinding)
+        : RecyclerView.ViewHolder(itemView) {
+        var rootCard = layoutBinding.serverRootCard
 
-        var serverName: TextView = itemView.findViewById(R.id.serverName)
-        var serverUsernameAddress: TextView = itemView.findViewById(R.id.serverUsernameAddress)
-        var serverOs: TextView = itemView.findViewById(R.id.serverOS)
-
-        var serverStatus: TextView = itemView.findViewById(R.id.serverStatus)
+        var serverName = layoutBinding.serverName
+        var serverUsernameAddress = layoutBinding.serverUsernameAddress
+        var serverOs = layoutBinding.serverOS
+        var serverStatus = layoutBinding.serverStatus
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val serverView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.view_server, parent, false)
+        val layoutBinding = ViewServerBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent, false)
 
-        return ViewHolder(serverView)
+        return ViewHolder(layoutBinding.root, layoutBinding)
     }
 
     @SuppressLint("SetTextI18n")
