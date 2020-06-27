@@ -9,9 +9,9 @@ import com.github.kwasow.codeedit.fragments.SomethingWentWrongFragment
 import com.github.kwasow.codeedit.fragments.TerminalFragment
 
 class IDEPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
-    private var filesFragment: FilesFragment = FilesFragment()
-    private var editorFragment: EditorFragment = EditorFragment()
-    private var terminalFragment: TerminalFragment = TerminalFragment()
+    var filesFragment: FilesFragment = FilesFragment()
+    var editorFragment: EditorFragment = EditorFragment()
+    var terminalFragment: TerminalFragment = TerminalFragment()
 
     // 0 - Files
     // 1 - (default) Editor

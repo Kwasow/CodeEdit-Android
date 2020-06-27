@@ -30,17 +30,6 @@ class FilesFragment : Fragment() {
         return layoutBinding.root
     }
 
-    // TODO: This has to move to the fragment activity
-    /*
-        override fun onBackPressed() {
-            // If we are not at ./ then navigate back in the files tree
-            if (filesView.path == "./") {
-                super.onBackPressed()
-            } else {
-                filesView.goBack()
-            }
-        }
-    */
     override fun onDestroy() {
         super.onDestroy()
 

@@ -5,6 +5,7 @@ import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.widget.ViewPager2
 import com.github.kwasow.codeedit.adapters.IDEPagerAdapter
 
 import com.github.kwasow.codeedit.databinding.ActivityIdeBinding
@@ -14,6 +15,7 @@ import com.github.kwasow.codeedit.utils.ConnectionService
 class IDEActivity : FragmentActivity() {
     private lateinit var layoutBinding: ActivityIdeBinding
     private lateinit var pagerAdapter: IDEPagerAdapter
+    private lateinit var ideViewPager: ViewPager2
 
     private lateinit var serviceIntent: Intent
 
@@ -51,9 +53,12 @@ class IDEActivity : FragmentActivity() {
             }
         }
 
+
         pagerAdapter = IDEPagerAdapter(this)
-        layoutBinding.ideViewPager.apply {
+        ideViewPager = layoutBinding.ideViewPager
+        ideViewPager.apply {
             adapter = pagerAdapter
+            currentItem = 1
         }
 
         serviceIntent = Intent(this, ConnectionService::class.java)
@@ -74,10 +79,23 @@ class IDEActivity : FragmentActivity() {
                 .show()
         }
     }
-    // TODO: Go back to default file view or quit if it's already the visible one, or if it's the
-    //  files view, then navigate back in the file tree
+
     override fun onBackPressed() {
-        super.onBackPressed()
+        // 0 - Files
+        // 1 - (default) Editor
+        // 2 - Terminal
+        when (ideViewPager.currentItem) {
+            0 -> {
+                if (pagerAdapter.filesFragment.files.path == "./") {
+                    ideViewPager.currentItem = 1
+                } else {
+                    pagerAdapter.filesFragment.files.goBack()
+                }
+            }
+            1 -> super.onBackPressed()
+            2-> ideViewPager.currentItem = 1
+            else -> super.onBackPressed()
+        }
     }
 
     override fun onDestroy() {
