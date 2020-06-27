@@ -153,8 +153,6 @@ class ConnectionService : Service() {
         connectionCallbacks.remove(callback)
     }
 
-    // TODO: This is fine for checking, but the UI should update the OS as well without the need
-    //  to restart the app
     private fun checkOS() {
         // If hasn't been checked or wasn't recognized by a previous version
         if (details.os == "Not checked"

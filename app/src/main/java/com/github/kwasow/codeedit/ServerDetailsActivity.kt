@@ -167,6 +167,21 @@ class ServerDetailsActivity : AppCompatActivity() {
         serviceIntent = Intent(this, ConnectionService::class.java)
     }
 
+    fun delete(v: View) {
+        if (!isBound) {
+            bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        }
+        // Stop the service if we're deleting the currently active connection
+        if (connectionService?.isConnected() == true
+            && connectionService?.currentHostname() == "$username@$hostname:$port") {
+            connectionService?.disconnect()
+        }
+
+        // Delete and finish this activity
+        details.delete(this)
+        finish()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
