@@ -20,3 +20,12 @@ everyone by Google in some version of Android in the future.
 
 The app requires the `ls`, `file` and `uname` commands to work on your remote system.
 This means that macOS should also work.
+
+## Current feature set
+
+|                | Mobile             | Desktop |
+|:---------------|:------------------:|:-------:|
+| Server manager | :heavy_check_mark: |   :x:   |
+| File Browser   | :heavy_check_mark: |   :x:   |
+| Editor         |    `In progress`   |   :x:   |
+| Terminal       | :heavy_check_mark: |   :x:   |
