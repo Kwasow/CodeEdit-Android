@@ -53,9 +53,8 @@ class IDEActivity : FragmentActivity() {
             }
         }
 
-
-        pagerAdapter = IDEPagerAdapter(this)
         ideViewPager = layoutBinding.ideViewPager
+        pagerAdapter = IDEPagerAdapter(this, ideViewPager)
         ideViewPager.apply {
             adapter = pagerAdapter
             currentItem = 1

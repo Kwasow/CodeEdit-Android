@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/mainTextEditor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:typeface="monospace"
+        android:fontFamily="@font/ubuntu_mono_regular"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/noFileOpenText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="40dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="Open a file by choosing an entry from the file manager on the left"/>
+
+</LinearLayout>

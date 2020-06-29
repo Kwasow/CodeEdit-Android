@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.adapters.FilesAdapter
@@ -16,6 +17,7 @@ import com.github.kwasow.codeedit.models.FileDetails
 import com.github.kwasow.codeedit.utils.ConnectionService
 
 import com.trilead.ssh2.Session
+import kotlinx.android.synthetic.main.view_files.view.*
 
 import kotlinx.android.synthetic.main.view_terminal.view.*
 
@@ -34,6 +36,7 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
     private var recyclerView: RecyclerView? = null
     private var viewManager: RecyclerView.LayoutManager
     private var loadingIndicator: ProgressBar
+    var editorView: EditorView? = null
 
     var path = "./"
 
@@ -42,7 +45,7 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
     init {
         inflate(context, R.layout.view_files, this)
 
-        loadingIndicator = findViewById(R.id.loadingIndicator)
+        loadingIndicator = this.rootView.loadingIndicator
         viewManager = LinearLayoutManager(context)
         serviceIntent = Intent(context, ConnectionService::class.java)
     }
@@ -94,7 +97,10 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         }
     }
 
-    fun open() {
+    private lateinit var ideViewPager: ViewPager2
+
+    fun open(pager: ViewPager2) {
+        ideViewPager = pager
         path = "./"
         cdFile()
     }
@@ -141,7 +147,12 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
         Handler(Looper.getMainLooper()).post {
             recyclerView = findViewById<RecyclerView>(R.id.filesRecyclerView).apply {
                 layoutManager = viewManager
-                adapter = FilesAdapter(filesArray, this@FilesView)
+                adapter = FilesAdapter(
+                    filesArray,
+                    this@FilesView,
+                    editorView,
+                    ideViewPager
+                )
             }
             loadingIndicator.visibility = GONE
             recyclerView?.visibility = VISIBLE

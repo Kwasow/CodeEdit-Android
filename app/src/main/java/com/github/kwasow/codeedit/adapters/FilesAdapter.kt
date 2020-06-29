@@ -6,20 +6,23 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.models.FileDetails
+import com.github.kwasow.codeedit.views.EditorView
 import com.github.kwasow.codeedit.views.FilesView
 
-class FilesAdapter(private val dataset: MutableList<FileDetails>, private val filesView: FilesView) :
-    RecyclerView.Adapter<FilesAdapter.ViewHolder>() {
+class FilesAdapter(
+    private val dataset: MutableList<FileDetails>,
+    private val filesView: FilesView,
+    private val editorView: EditorView?,
+    private val ideViewPager: ViewPager2
+) : RecyclerView.Adapter<FilesAdapter.ViewHolder>() {
 
     init {
         // Sort to be grouped by types (directories, text, binary, other)
         dataset.sort()
-
-        // Use unique IDs
-        setHasStableIds(true)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -54,8 +57,15 @@ class FilesAdapter(private val dataset: MutableList<FileDetails>, private val fi
                     0, 0, 0)
         }
         holder.itemView.setOnClickListener {
-            if (dataset[position].type == FileDetails.Type.DIRECTORY) {
-                filesView.updatePath(dataset[position].name)
+            when (dataset[position].type) {
+                FileDetails.Type.DIRECTORY ->
+                    filesView.updatePath(dataset[position].name)
+                FileDetails.Type.TEXT -> {
+                    editorView?.openFile(filesView.path + dataset[position].name)
+                    // Move to editor page
+                    ideViewPager.currentItem = 1
+                }
+                else -> {}
             }
         }
     }
