@@ -1,23 +1,23 @@
 package com.github.kwasow.codeedit
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 import com.github.kwasow.codeedit.databinding.ActivityServerDetailsBinding
+import com.github.kwasow.codeedit.databinding.DialogPasswordBinding
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.utils.ConnectionService
 import com.github.kwasow.codeedit.utils.RemoteInfoManager
+import kotlinx.android.synthetic.main.dialog_password.view.*
 
 class ServerDetailsActivity : AppCompatActivity() {
     private lateinit var layoutBinding: ActivityServerDetailsBinding
+    private lateinit var dialogBinding: DialogPasswordBinding
 
     private lateinit var serviceIntent: Intent
 
@@ -118,30 +118,30 @@ class ServerDetailsActivity : AppCompatActivity() {
     }
 
     fun connect(v: View) {
-        // TODO: Replace with alert dialog
-        val alert = Dialog(this)
-        alert.setContentView(R.layout.dialog_password)
-        val buttonConnect = alert.findViewById<Button>(R.id.buttonConnect)
-        buttonConnect.setOnClickListener {
+        dialogBinding = DialogPasswordBinding.inflate(layoutInflater)
+        val input = dialogBinding.root
+
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle(R.string.password)
+        alert.setView(input)
+        alert.setPositiveButton(R.string.connect) { dialogInterface: DialogInterface, _: Int ->
             serviceIntent.putExtra("details", details)
             serviceIntent.putExtra(
                 "password",
-                alert.findViewById<EditText>(R.id.inputPassword).text.toString())
-
+                input.passwordInput.text.toString())
             if (!isBound) {
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             }
 
             // Start the service
             startService(serviceIntent)
-            alert.dismiss()
+            dialogInterface.dismiss()
         }
-        val buttonCancel = alert.findViewById<Button>(R.id.buttonCancel)
-        buttonCancel.setOnClickListener {
-            alert.dismiss()
+        alert.setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int ->
+            dialogInterface.dismiss()
         }
-        alert.show()
 
+        alert.show()
     }
 
     fun launchIDE(v: View) {
