@@ -15,7 +15,9 @@ class ServerAddActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        details = intent?.getSerializableExtra("details") as RemoteInfoManager
+        if (intent?.getSerializableExtra("details") != null) {
+            details = intent?.getSerializableExtra("details") as RemoteInfoManager
+        }
 
         layoutBinding = ActivityServerAddBinding.inflate(layoutInflater)
 

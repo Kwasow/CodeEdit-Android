@@ -118,6 +118,7 @@ class ServerDetailsActivity : AppCompatActivity() {
     }
 
     fun connect(v: View) {
+        // TODO: Replace with alert dialog
         val alert = Dialog(this)
         alert.setContentView(R.layout.dialog_password)
         val buttonConnect = alert.findViewById<Button>(R.id.buttonConnect)

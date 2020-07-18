@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.view_editor.view.*
 import java.io.InputStream
 import java.io.OutputStream
 
+// TODO: Add loading indicator
 class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private var session: Session? = null
 
@@ -38,13 +39,19 @@ class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         inflate(context, R.layout.view_editor, this)
 
         editText = this.rootView.mainTextEditor
+        this.rootView.editorSaveButton.setOnClickListener {
+            save()
+        }
+        this.rootView.editorCloseButton.setOnClickListener {
+            close()
+        }
         serviceIntent = Intent(context, ConnectionService::class.java)
     }
 
     private var connectionService: ConnectionService? = null
     private var isBound = false
 
-    private var serviceConnection = object : ServiceConnection {
+    private var serviceConnectionOpen = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as ConnectionService.LocalBinder
             connectionService = binder.getService()
@@ -77,10 +84,36 @@ class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 stdin = session?.stdin // OutputStreams
                 stderr = session?.stderr // InputStream
 
-                // This will list all files as well as their type
+                // This will print out the contents of the file
                 session?.execCommand("cat $currentFile")
 
                 readThread.start()
+            }.start()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            connectionService = null
+            isBound = false
+        }
+    }
+
+    private var serviceConnectionSave = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as ConnectionService.LocalBinder
+            connectionService = binder.getService()
+            isBound = true
+
+            Thread {
+                session = connectionService?.newSession()
+
+                // TODO: Escape characters
+                // This will print the given string to file
+                val newContents = editText.text.toString()
+                val command = """printf "$newContents" > $currentFile"""
+                session?.execCommand(command)
+
+                session?.close()
+                context.unbindService(this)
             }.start()
         }
 
@@ -94,10 +127,25 @@ class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         // Only open if is not yet open
         if (currentFile != path) {
             currentFile = path
-            context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+            context.bindService(serviceIntent, serviceConnectionOpen, Context.BIND_AUTO_CREATE)
             // Make editor visible
             this.rootView.noFileOpenText.visibility = GONE
             editText.visibility = VISIBLE
+            this.rootView.buttonEditorLinear.visibility = VISIBLE
+        }
+    }
+
+    private fun close() {
+        currentFile = ""
+        editText.text.clear()
+        this.rootView.noFileOpenText.visibility = VISIBLE
+        editText.visibility = GONE
+        this.rootView.buttonEditorLinear.visibility = GONE
+    }
+
+    private fun save() {
+        if (currentFile.isNotEmpty()) {
+            context.bindService(serviceIntent, serviceConnectionSave, Context.BIND_AUTO_CREATE)
         }
     }
 

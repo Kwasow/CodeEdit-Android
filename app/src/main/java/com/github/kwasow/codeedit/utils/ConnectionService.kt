@@ -15,6 +15,7 @@ import com.github.kwasow.codeedit.receivers.NotificationReceiver
 
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.Session
+
 import java.io.IOException
 
 // This is a service that keeps a connection to the remote service alive and

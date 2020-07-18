@@ -42,13 +42,13 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
     implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
 
     implementation("androidx.appcompat:appcompat:1.1.0")
     implementation("androidx.core:core-ktx:1.3.0")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-
-    implementation("io.reactivex.rxjava3:rxkotlin:3.0.0")
 
     implementation("org.connectbot:sshlib:2.2.11")
 
