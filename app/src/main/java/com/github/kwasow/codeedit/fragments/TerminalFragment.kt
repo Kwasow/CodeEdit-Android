@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-
 import com.github.kwasow.codeedit.databinding.FragmentTerminalBinding
 import com.github.kwasow.codeedit.views.TerminalView
 

@@ -8,14 +8,11 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.receivers.NotificationReceiver
-
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.Session
-
 import java.io.IOException
 
 // This is a service that keeps a connection to the remote service alive and
@@ -97,7 +94,8 @@ class ConnectionService : Service() {
 
         // Check if we are on a WIFI/Ethernet network
         if ((NetworkState.type(this) == NetworkState.State.WIFI) or
-            (NetworkState.type(this) == NetworkState.State.ETHERNET)) {
+            (NetworkState.type(this) == NetworkState.State.ETHERNET)
+        ) {
             connectionThread.start()
         } else {
             val builder = AlertDialog.Builder(this)
@@ -156,8 +154,9 @@ class ConnectionService : Service() {
 
     private fun checkOS() {
         // If hasn't been checked or wasn't recognized by a previous version
-        if (details.os == "Not checked"
-            || details.os == "unknown") {
+        if (details.os == "Not checked" ||
+            details.os == "unknown"
+        ) {
 
             val session = connection.openSession()
             val stdout = session.stdout

@@ -23,7 +23,8 @@ class MainApplication : Application() {
 
             var channelName = getString(R.string.no_translation_activeConnectionChannel)
             var notificationChannel = NotificationChannel(
-                "activeConnectionChannel", channelName, NotificationManager.IMPORTANCE_DEFAULT)
+                "activeConnectionChannel", channelName, NotificationManager.IMPORTANCE_DEFAULT
+            )
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }

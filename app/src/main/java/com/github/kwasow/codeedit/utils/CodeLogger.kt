@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.Log
 import android.widget.TextView
 import com.github.kwasow.codeedit.R
-
 import java.lang.Exception
 
 // Used for easier management of logtags
@@ -44,5 +43,4 @@ class CodeLogger {
             dialog.show()
         }
     }
-
 }

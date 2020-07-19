@@ -16,5 +16,4 @@ data class FileDetails(
     override fun compareTo(other: FileDetails): Int {
         return this.type.getValue().compareTo(other.type.getValue())
     }
-
 }

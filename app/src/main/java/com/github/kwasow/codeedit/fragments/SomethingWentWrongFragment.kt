@@ -16,5 +16,4 @@ class SomethingWentWrongFragment : Fragment() {
     ): View? {
         return FragmentSomethingWrongBinding.inflate(inflater).root
     }
-
 }

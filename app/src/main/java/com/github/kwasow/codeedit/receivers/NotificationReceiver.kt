@@ -1,6 +1,8 @@
 package com.github.kwasow.codeedit.receivers
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import com.github.kwasow.codeedit.utils.CodeLogger
 import com.github.kwasow.codeedit.utils.ConnectionService
 

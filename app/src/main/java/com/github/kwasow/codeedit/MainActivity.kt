@@ -10,7 +10,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.kwasow.codeedit.adapters.ServersAdapter
-
 import com.github.kwasow.codeedit.databinding.ActivityMainBinding
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.utils.ConnectionService

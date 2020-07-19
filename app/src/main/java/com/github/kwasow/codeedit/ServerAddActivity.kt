@@ -3,7 +3,6 @@ package com.github.kwasow.codeedit
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.kwasow.codeedit.databinding.ActivityServerAddBinding
 import com.github.kwasow.codeedit.utils.RemoteInfoManager
 

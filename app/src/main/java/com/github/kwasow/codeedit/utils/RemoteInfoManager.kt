@@ -1,7 +1,13 @@
 package com.github.kwasow.codeedit.utils
 
 import android.content.Context
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.io.Serializable
 
 data class RemoteInfoManager(
     var alias: String,
@@ -15,7 +21,7 @@ data class RemoteInfoManager(
     companion object {
 
         // Read saved servers from storage
-        fun get(context: Context) : MutableList<RemoteInfoManager> {
+        fun get(context: Context): MutableList<RemoteInfoManager> {
             val directory = File(context.filesDir.toString() + "/servers/")
             val fileList = directory.listFiles()
             val serverList = mutableListOf<RemoteInfoManager>()
@@ -38,7 +44,7 @@ data class RemoteInfoManager(
     // The following functions return false if something failed and there was an error
 
     // Save the given server info to a file
-    fun save(context: Context) : Boolean {
+    fun save(context: Context): Boolean {
         val storageDir = File(context.filesDir.toString() + "/servers/")
         val file = File(storageDir.toString() + "/" + toFilename(alias))
 
@@ -62,7 +68,7 @@ data class RemoteInfoManager(
     }
 
     // Delete a server entry
-    fun delete(context: Context) : Boolean {
+    fun delete(context: Context): Boolean {
         val file = File(context.filesDir.toString() + "/servers/" + toFilename(alias))
 
         // Just make sure it exists
@@ -71,7 +77,7 @@ data class RemoteInfoManager(
         return file.delete()
     }
 
-    fun update(info: RemoteInfoManager, context: Context) : Boolean {
+    fun update(info: RemoteInfoManager, context: Context): Boolean {
         val fileOld = File(context.filesDir.toString() + "/servers/" + toFilename(alias))
         val fileNew = File(context.filesDir.toString() + "/servers/" + toFilename(info.alias))
 

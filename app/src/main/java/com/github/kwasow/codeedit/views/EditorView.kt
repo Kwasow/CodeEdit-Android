@@ -10,13 +10,10 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.widget.EditText
 import android.widget.LinearLayout
-
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.utils.ConnectionService
 import com.trilead.ssh2.Session
-
 import kotlinx.android.synthetic.main.view_editor.view.*
-
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -109,7 +106,8 @@ class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 // TODO: Escape characters
                 // This will print the given string to file
                 val newContents = editText.text.toString()
-                val command = """printf "$newContents" > $currentFile"""
+                val command =
+                    """printf "$newContents" > $currentFile"""
                 session?.execCommand(command)
 
                 session?.close()
@@ -148,5 +146,4 @@ class EditorView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             context.bindService(serviceIntent, serviceConnectionSave, Context.BIND_AUTO_CREATE)
         }
     }
-
 }

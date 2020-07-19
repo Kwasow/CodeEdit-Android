@@ -1,13 +1,16 @@
 package com.github.kwasow.codeedit
 
 import android.app.AlertDialog
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.github.kwasow.codeedit.adapters.IDEPagerAdapter
-
 import com.github.kwasow.codeedit.databinding.ActivityIdeBinding
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.utils.ConnectionService
@@ -92,7 +95,7 @@ class IDEActivity : FragmentActivity() {
                 }
             }
             1 -> super.onBackPressed()
-            2-> ideViewPager.currentItem = 1
+            2 -> ideViewPager.currentItem = 1
             else -> super.onBackPressed()
         }
     }

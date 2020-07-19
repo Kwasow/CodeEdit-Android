@@ -1,6 +1,9 @@
 package com.github.kwasow.codeedit.views
 
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -10,17 +13,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.adapters.FilesAdapter
 import com.github.kwasow.codeedit.models.FileDetails
 import com.github.kwasow.codeedit.utils.ConnectionService
-
 import com.trilead.ssh2.Session
 import kotlinx.android.synthetic.main.view_files.view.*
-
 import kotlinx.android.synthetic.main.view_terminal.view.*
-
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -181,5 +180,4 @@ class FilesView(context: Context, attrs: AttributeSet) : ConstraintLayout(contex
             stderr?.close()
         }.start()
     }
-
 }

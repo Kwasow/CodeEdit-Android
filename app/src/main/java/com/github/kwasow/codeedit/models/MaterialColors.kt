@@ -21,5 +21,4 @@ class MaterialColors {
         val orange = Color.parseColor("#FFFF9800")
         val orangeLight = Color.parseColor("#FFFFCC80")
     }
-
 }

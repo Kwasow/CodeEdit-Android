@@ -1,13 +1,16 @@
 package com.github.kwasow.codeedit
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.kwasow.codeedit.databinding.ActivityServerDetailsBinding
 import com.github.kwasow.codeedit.databinding.DialogPasswordBinding
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
@@ -41,7 +44,8 @@ class ServerDetailsActivity : AppCompatActivity() {
 
             // If service is already connected to something
             if (connectionService?.isConnected() == true &&
-                connectionService?.currentHostname() == "$username@$hostname:$port") {
+                connectionService?.currentHostname() == "$username@$hostname:$port"
+            ) {
                 // Update buttons
                 layoutBinding.mainButtonConnect.isEnabled = false
                 layoutBinding.mainButtonLaunchIDE.isEnabled = true
@@ -128,7 +132,8 @@ class ServerDetailsActivity : AppCompatActivity() {
             serviceIntent.putExtra("details", details)
             serviceIntent.putExtra(
                 "password",
-                input.passwordInput.text.toString())
+                input.passwordInput.text.toString()
+            )
             if (!isBound) {
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             }
@@ -172,8 +177,9 @@ class ServerDetailsActivity : AppCompatActivity() {
             bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
         // Stop the service if we're deleting the currently active connection
-        if (connectionService?.isConnected() == true
-            && connectionService?.currentHostname() == "$username@$hostname:$port") {
+        if (connectionService?.isConnected() == true &&
+            connectionService?.currentHostname() == "$username@$hostname:$port"
+        ) {
             connectionService?.disconnect()
         }
 

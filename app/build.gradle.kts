@@ -1,7 +1,10 @@
 plugins {
     id("com.android.application")
+
     kotlin("android")
     kotlin("android.extensions")
+
+    id("org.jmailen.kotlinter") version "2.4.1"
 }
 
 android {
@@ -21,7 +24,8 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 

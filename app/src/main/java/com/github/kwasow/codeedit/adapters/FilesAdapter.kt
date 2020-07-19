@@ -4,10 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.models.FileDetails
 import com.github.kwasow.codeedit.views.EditorView
@@ -39,22 +37,30 @@ class FilesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.filename.text = dataset[position].name
         when (dataset[position].type) {
-            FileDetails.Type.DIRECTORY -> holder.filename
-                .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_file_directory,
-                    0, 0, 0)
-            FileDetails.Type.TEXT -> holder.filename
-                .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_file_text,
-                    0, 0, 0)
-            FileDetails.Type.BINARY -> holder.filename
-                .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_file_executable,
-                    0, 0, 0)
-            FileDetails.Type.OTHER -> holder.filename
-                .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_file_other,
-                    0, 0, 0)
+            FileDetails.Type.DIRECTORY ->
+                holder.filename
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_file_directory,
+                        0, 0, 0
+                    )
+            FileDetails.Type.TEXT ->
+                holder.filename
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_file_text,
+                        0, 0, 0
+                    )
+            FileDetails.Type.BINARY ->
+                holder.filename
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_file_executable,
+                        0, 0, 0
+                    )
+            FileDetails.Type.OTHER ->
+                holder.filename
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_file_other,
+                        0, 0, 0
+                    )
         }
         holder.itemView.setOnClickListener {
             when (dataset[position].type) {

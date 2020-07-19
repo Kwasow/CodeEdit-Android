@@ -10,11 +10,11 @@ import com.github.kwasow.codeedit.ServerDetailsActivity
 import com.github.kwasow.codeedit.databinding.ViewServerBinding
 import com.github.kwasow.codeedit.utils.RemoteInfoManager
 
-class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?)
-    : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, private val connected: String?) :
+    RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View, layoutBinding: ViewServerBinding)
-        : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View, layoutBinding: ViewServerBinding) :
+        RecyclerView.ViewHolder(itemView) {
         var rootCard = layoutBinding.serverRootCard
 
         var serverName = layoutBinding.serverName
@@ -26,7 +26,8 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, privat
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutBinding = ViewServerBinding.inflate(
             LayoutInflater.from(parent.context),
-            parent, false)
+            parent, false
+        )
 
         return ViewHolder(layoutBinding.root, layoutBinding)
     }
@@ -45,7 +46,8 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, privat
         holder.serverOs.text = " " + dataset[position].os
 
         if (connected != null &&
-            connected == "${dataset[position].username}@${dataset[position].hostname}:${dataset[position].port}") {
+            connected == "${dataset[position].username}@${dataset[position].hostname}:${dataset[position].port}"
+        ) {
             holder.serverStatus.visibility = View.VISIBLE
         } else {
             holder.serverStatus.visibility = View.GONE
@@ -55,5 +57,4 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, privat
     override fun getItemCount(): Int {
         return dataset.size
     }
-
 }

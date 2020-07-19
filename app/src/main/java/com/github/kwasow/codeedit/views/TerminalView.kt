@@ -1,6 +1,9 @@
 package com.github.kwasow.codeedit.views
 
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Handler
 import android.os.IBinder
@@ -8,14 +11,10 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ScrollView
-
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.utils.ConnectionService
-
 import com.trilead.ssh2.Session
-
 import kotlinx.android.synthetic.main.view_terminal.view.*
-
 import java.io.InputStream
 import java.io.OutputStream
 
