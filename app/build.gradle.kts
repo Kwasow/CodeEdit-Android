@@ -48,15 +48,16 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
 
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.core:core-ktx:1.3.0")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.core:core-ktx:1.3.1")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
     implementation("org.connectbot:sshlib:2.2.11")
+    implementation("org.codelibs:jcifs:2.1.20")
 
-    implementation("com.google.android.material:material:1.1.0")
+    implementation("com.google.android.material:material:1.2.0")
 
     testImplementation("junit:junit:4.13")
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
