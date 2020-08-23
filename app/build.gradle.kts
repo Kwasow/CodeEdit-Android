@@ -3,8 +3,6 @@ plugins {
 
     kotlin("android")
     kotlin("android.extensions")
-
-    id("org.jmailen.kotlinter") version "2.4.1"
 }
 
 android {
@@ -55,7 +53,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
     implementation("org.connectbot:sshlib:2.2.11")
-    implementation("org.codelibs:jcifs:2.1.20")
+    // implementation("org.codelibs:jcifs:2.1.20")
 
     implementation("com.google.android.material:material:1.2.0")
 
