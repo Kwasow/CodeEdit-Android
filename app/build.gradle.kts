@@ -53,7 +53,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
     implementation("org.connectbot:sshlib:2.2.11")
-    // implementation("org.codelibs:jcifs:2.1.20")
+    implementation("com.hierynomus:smbj:0.10.0")
 
     implementation("com.google.android.material:material:1.2.0")
 
