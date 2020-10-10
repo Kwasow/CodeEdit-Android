@@ -25,7 +25,7 @@ class ServerAddActivity : AppCompatActivity() {
             layoutBinding.inputHostname.append(details!!.hostname)
             layoutBinding.inputUsername.append(details!!.username)
             layoutBinding.inputPort.text.clear()
-            layoutBinding.inputPort.append(details!!.port.toString())
+            layoutBinding.inputPort.append(details!!.sshPort.toString())
         }
 
         setContentView(layoutBinding.root)
@@ -42,7 +42,7 @@ class ServerAddActivity : AppCompatActivity() {
             info.save(this)
         } else {
             info.os = details!!.os
-            info.port = layoutBinding.inputPort.text.toString().toInt()
+            info.sshPort = layoutBinding.inputPort.text.toString().toInt()
 
             details!!.update(info, this)
         }

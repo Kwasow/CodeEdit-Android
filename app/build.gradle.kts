@@ -20,6 +20,7 @@ android {
     }
 
     buildTypes {
+	    // TODO: Add signing key
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(

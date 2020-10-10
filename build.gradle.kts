@@ -26,4 +26,8 @@ tasks {
     val clean by registering(Delete::class) {
         delete(buildDir)
     }
+
+    this.register("testClasses") {
+        println("Task 'testClasses': Not implemented")
+    }
 }

@@ -11,6 +11,11 @@ import androidx.core.app.NotificationCompat
 import com.github.kwasow.codeedit.R
 import com.github.kwasow.codeedit.interfaces.ConnectionCallbacks
 import com.github.kwasow.codeedit.receivers.NotificationReceiver
+import com.hierynomus.smbj.connection.Connection as SMBConnection
+import com.hierynomus.smbj.session.Session as SMBSession
+import com.hierynomus.smbj.SMBClient
+import com.hierynomus.smbj.auth.AuthenticationContext
+import com.hierynomus.smbj.share.DiskShare
 import com.trilead.ssh2.Connection
 import com.trilead.ssh2.Session
 import java.io.IOException
@@ -21,11 +26,15 @@ class ConnectionService : Service() {
     private val binder = LocalBinder()
 
     private lateinit var connection: Connection
+    private lateinit var sambaClient: SMBClient
+    private lateinit var sambaConnection: SMBConnection
+    private lateinit var sambaSession: SMBSession
     private lateinit var details: RemoteInfoManager
     var hostname: String? = null
     var username: String? = null
     private var password: String? = null
-    var port: Int = 22
+    var sshPort: Int = 22
+    var sambaPort: Int = 445
 
     private val connectionCallbacks = mutableListOf<ConnectionCallbacks>()
 
@@ -34,18 +43,19 @@ class ConnectionService : Service() {
         hostname = details.hostname
         username = details.username
         password = intent.getStringExtra("password")
-        // Keep 22 if it is null for some reason
-        port = details.port
+        // Ports
+        sshPort = details.sshPort
+        sambaPort = details.sambaPort
 
         // Stop the service if any important details is missing
         if (hostname.isNullOrEmpty().or(username.isNullOrEmpty())) {
             stopSelf()
         }
 
-        // Connect to remote
+        // Connect to remote ssh
         val connectionThread = Thread {
             try {
-                connection = Connection(hostname, port)
+                connection = Connection(hostname, sshPort)
                 connection.connect()
                 // TODO: Replace with "keyboard-interactive" in the future
                 val connected = if (password.isNullOrEmpty()) {
@@ -55,7 +65,7 @@ class ConnectionService : Service() {
                 }
 
                 if (!connected) {
-                    throw IOException("There was a problem connecting to $hostname:$port")
+                    throw IOException("There was a problem connecting to $hostname:$sshPort")
                 }
 
                 // Bring service into foreground and post notification
@@ -89,6 +99,28 @@ class ConnectionService : Service() {
                 stopSelf()
                 hostname = null; username = null
                 onDestroy()
+            }
+        }
+
+        // Connect to remote samba
+        val sambaConnectionThread = Thread {
+            sambaClient = SMBClient()
+
+            try {
+                val authenticationContext =  if (password.isNullOrEmpty()) {
+                    AuthenticationContext.guest()
+                } else {
+                    AuthenticationContext(username, password!!.toCharArray(), hostname)
+                }
+
+                sambaConnection = sambaClient.connect(hostname, sambaPort)
+                sambaSession = sambaConnection.authenticate(authenticationContext)
+
+                val diskShare : DiskShare = sambaSession.connectShare("code") as DiskShare
+
+                println(diskShare.list("/"))
+            } catch (e: Exception) {
+                CodeLogger.logE(e)
             }
         }
 
@@ -142,7 +174,7 @@ class ConnectionService : Service() {
 
     fun isConnected(): Boolean = this::connection.isInitialized
 
-    fun currentHostname(): String = "$username@$hostname:$port"
+    fun currentHostname(): String = "$username@$hostname:$sshPort"
 
     fun addCallback(callback: ConnectionCallbacks) {
         connectionCallbacks.add(callback)
@@ -185,7 +217,8 @@ class ConnectionService : Service() {
                     details.hostname,
                     details.username,
                     os,
-                    details.port
+                    details.sshPort,
+                    details.sambaPort
                 )
 
                 // Update saved details

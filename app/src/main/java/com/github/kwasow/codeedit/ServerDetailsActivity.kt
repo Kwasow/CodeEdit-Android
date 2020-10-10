@@ -66,7 +66,7 @@ class ServerDetailsActivity : AppCompatActivity() {
         details = intent.getSerializableExtra("details") as RemoteInfoManager
         hostname = details.hostname
         username = details.username
-        port = details.port
+        port = details.sshPort
 
         layoutBinding = ActivityServerDetailsBinding.inflate(layoutInflater)
 

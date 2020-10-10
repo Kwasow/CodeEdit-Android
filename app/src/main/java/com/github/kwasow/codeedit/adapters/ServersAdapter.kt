@@ -46,7 +46,7 @@ class ServersAdapter(private val dataset: MutableList<RemoteInfoManager>, privat
         holder.serverOs.text = " " + dataset[position].os
 
         if (connected != null &&
-            connected == "${dataset[position].username}@${dataset[position].hostname}:${dataset[position].port}"
+            connected == "${dataset[position].username}@${dataset[position].hostname}:${dataset[position].sshPort}"
         ) {
             holder.serverStatus.visibility = View.VISIBLE
         } else {
