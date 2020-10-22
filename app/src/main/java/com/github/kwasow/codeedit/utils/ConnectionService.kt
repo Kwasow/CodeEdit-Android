@@ -216,9 +216,9 @@ class ConnectionService : Service() {
                     details.alias,
                     details.hostname,
                     details.username,
-                    os,
                     details.sshPort,
-                    details.sambaPort
+                    details.sambaPort,
+                    os,
                 )
 
                 // Update saved details

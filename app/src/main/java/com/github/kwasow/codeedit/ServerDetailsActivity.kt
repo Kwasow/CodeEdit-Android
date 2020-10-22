@@ -73,9 +73,10 @@ class ServerDetailsActivity : AppCompatActivity() {
         serviceIntent = Intent(this, ConnectionService::class.java)
 
         layoutBinding.serverName.text = details.alias
-        layoutBinding.serverUsernameAddress.text =
-            " $username@$hostname"
+        layoutBinding.serverUsernameAddress.text = " $username@$hostname"
         layoutBinding.serverOS.text = " ${details.os}"
+        layoutBinding.sshPort.text = " ${details.sshPort}"
+        layoutBinding.sambaPort.text = " ${details.sambaPort}"
 
         connectionCallbacks = object : ConnectionCallbacks {
             override fun onConnected() {
@@ -169,6 +170,7 @@ class ServerDetailsActivity : AppCompatActivity() {
         val intent = Intent(this, ServerAddActivity::class.java)
         intent.putExtra("details", details)
         startActivity(intent)
+        // TODO: This finish is only a temporary solution, has to be replaced with something else
         finish()
     }
 

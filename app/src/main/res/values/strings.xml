@@ -5,6 +5,8 @@
     <string name="no_servers_configured">No servers configured</string>
     <string name="server_address">Address:</string>
     <string name="server_os">Server OS:</string>
+    <string name="ssh_port">SSH port:</string>
+    <string name="sambaPort">Samba port:</string>
     <string name="active">Active</string>
     <string name="alert">Alert</string>
     <string name="network_not_wifi">You\'re not connected to a WIFI network.</string>
@@ -21,7 +23,8 @@
     <string name="alias">Alias</string>
     <string name="hostname">Hostname</string>
     <string name="username">Username</string>
-    <string name="port_optional">Port (optional)</string>
+    <string name="port_optional_ssh">SSH port (optional)</string>
+    <string name="port_optional_samba">Samba port (optional)</string>
     <string name="save">Save</string>
     <string name="launch_ide">Launch IDE</string>
     <string name="disconnect">Disconnect</string>

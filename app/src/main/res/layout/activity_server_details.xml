@@ -48,11 +48,43 @@
         app:layout_constraintTop_toTopOf="@id/serverOSInfo"
         app:layout_constraintStart_toEndOf="@id/serverOSInfo"/>
 
+    <TextView
+        android:id="@+id/sshPortInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ssh_port"
+        app:layout_constraintTop_toBottomOf="@id/serverOSInfo"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/sshPort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        app:layout_constraintTop_toTopOf="@id/sshPortInfo"
+        app:layout_constraintStart_toEndOf="@id/sshPortInfo"/>
+
+    <TextView
+        android:id="@+id/sambaPortInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sambaPort"
+        app:layout_constraintTop_toBottomOf="@id/sshPortInfo"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/sambaPort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        app:layout_constraintTop_toTopOf="@id/sambaPortInfo"
+        app:layout_constraintStart_toEndOf="@id/sambaPortInfo"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/serverOSInfo"
+        app:layout_constraintTop_toBottomOf="@id/sambaPortInfo"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button

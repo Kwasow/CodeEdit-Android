@@ -24,8 +24,10 @@ class ServerAddActivity : AppCompatActivity() {
             layoutBinding.inputAlias.append(details!!.alias)
             layoutBinding.inputHostname.append(details!!.hostname)
             layoutBinding.inputUsername.append(details!!.username)
-            layoutBinding.inputPort.text.clear()
-            layoutBinding.inputPort.append(details!!.sshPort.toString())
+            layoutBinding.inputPortSSH.text.clear()
+            layoutBinding.inputPortSamba.text.clear()
+            layoutBinding.inputPortSSH.append(details!!.sshPort.toString())
+            layoutBinding.inputPortSamba.append(details!!.sambaPort.toString())
         }
 
         setContentView(layoutBinding.root)
@@ -36,13 +38,14 @@ class ServerAddActivity : AppCompatActivity() {
         val info = RemoteInfoManager(
             layoutBinding.inputAlias.text.toString(),
             layoutBinding.inputHostname.text.toString(),
-            layoutBinding.inputUsername.text.toString()
+            layoutBinding.inputUsername.text.toString(),
+            layoutBinding.inputPortSSH.text.toString().toInt(),
+            layoutBinding.inputPortSamba.text.toString().toInt(),
         )
         if (details == null) {
             info.save(this)
         } else {
             info.os = details!!.os
-            info.sshPort = layoutBinding.inputPort.text.toString().toInt()
 
             details!!.update(info, this)
         }

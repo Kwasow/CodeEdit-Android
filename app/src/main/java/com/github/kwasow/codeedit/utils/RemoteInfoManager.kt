@@ -13,9 +13,9 @@ data class RemoteInfoManager(
     var alias: String,
     var hostname: String,
     var username: String,
-    var os: String = "Not checked",
     var sshPort: Int = 22,
     var sambaPort: Int = 445,
+    var os: String = "Not checked",
 ) : Serializable {
 
     // All these functions are static for ease of use
